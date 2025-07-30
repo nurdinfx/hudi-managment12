@@ -150,6 +150,11 @@ export async function POST(req: Request) {
 
     // Get room details
     const room = await getRoom(hotelRoomSlug);
+    
+    if (!room) {
+      return new NextResponse('Room not found', { status: 404 });
+    }
+    
     const discountPrice = room.price - (room.price / 100) * room.discount;
     const baseAmount = discountPrice * numberOfDays;
     
