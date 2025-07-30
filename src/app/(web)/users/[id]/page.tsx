@@ -3,6 +3,7 @@
 import useSWR from 'swr';
 import { FaSignOutAlt } from 'react-icons/fa';
 import Image from 'next/image';
+import Link from 'next/link';
 import axios from 'axios';
 import { signOut } from 'next-auth/react';
 
@@ -217,7 +218,7 @@ const UserDetails = (props: { params: { id: string } }) => {
             ) : (
               <div className='text-center py-10'>
                 <h3 className='text-xl font-semibold mb-2'>No Bookings Found</h3>
-                <p className='text-gray-600'>You haven't made any bookings yet.</p>
+                <p className='text-gray-600'>You haven&apos;t made any bookings yet.</p>
                 <Link href='/rooms' className='mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors'>
                   Browse Rooms
                 </Link>
