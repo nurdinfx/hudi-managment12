@@ -1,0 +1,1 @@
+This directory is for local font files. Place your .woff, .woff2, .ttf, or other web font files here to use them in your project. 
