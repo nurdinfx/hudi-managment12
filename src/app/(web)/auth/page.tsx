@@ -182,15 +182,24 @@ const Auth = () => {
                 key={provider.id}
                 onClick={() => handleSignIn(provider.id)}
                 disabled={loading === provider.id}
-                className='w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600'
+                className='w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md hover:scale-[1.01] transition-all duration-300 disabled:opacity-80 disabled:cursor-not-allowed disabled:scale-100 dark:border-gray-600 group'
               >
                 {loading === provider.id ? (
-                  <div className='w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-3'></div>
+                  <div className="flex items-center">
+                    <div className='w-5 h-5 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mr-3'></div>
+                    <div className="flex text-blue-600">
+                      <span className="animate-soft-bounce mr-1">.</span>
+                      <span className="animate-soft-bounce mr-1" style={{animationDelay: '0.2s'}}>.</span>
+                      <span className="animate-soft-bounce" style={{animationDelay: '0.4s'}}>.</span>
+                    </div>
+                  </div>
                 ) : (
-                  getProviderIcon(provider.id)
+                  <div className="group-hover:scale-110 transition-transform duration-300">
+                    {getProviderIcon(provider.id)}
+                  </div>
                 )}
-                <span className='font-medium text-gray-900 dark:text-white'>
-                  {loading === provider.id ? 'Signing in...' : getProviderName(provider.id)}
+                <span className='font-medium text-gray-900 dark:text-white ml-2'>
+                  {loading === provider.id ? 'Signing in' : getProviderName(provider.id)}
                 </span>
               </button>
             );
