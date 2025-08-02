@@ -3,7 +3,7 @@ import Gallery from '@/components/Gallery/Gallery';
 import HeroSection from '@/components/HeroSection/HeroSection';
 import NewsLetter from '@/components/NewsLetter/NewsLetter';
 import PageSearch from '@/components/PageSearch/PageSearch';
-import MigrationStatus from '@/components/MigrationStatus/MigrationStatus';
+import SafeMigrationStatus from '@/components/SafeMigrationStatus/SafeMigrationStatus';
 import AuthPrompt from '@/components/AuthPrompt/AuthPrompt';
 import { getFeaturedRoom } from '@/libs/supabaseApis';
 
