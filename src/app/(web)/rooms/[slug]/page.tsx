@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 
 import { getRoom } from '@/libs/supabaseApis';
 import LoadingSpinner from '../../loading';
+import SoftLoader from '@/components/SoftLoader/SoftLoader';
 import HotelPhotoGallery from '@/components/HotelPhotoGallery/HotelPhotoGallery';
 import BookRoomCta from '@/components/BookRoomCta/BookRoomCta';
 import PaymentModal from '@/components/PaymentModal/PaymentModal';
