@@ -102,6 +102,19 @@ try {
   };
 }
 
+export type SomaliPaymentMethod =
+  | 'evc'
+  | 'zaad'
+  | 'sahal'
+  | 'premier_bank'
+  | 'amtel'
+  | 'dahabshiil'
+  | 'world_remit'
+  | 'taaj'
+  | 'edahab'
+  | 'hormud'
+  | 'somtel';
+
 export interface SomaliPaymentRequest {
   checkinDate: string;
   checkoutDate: string;
