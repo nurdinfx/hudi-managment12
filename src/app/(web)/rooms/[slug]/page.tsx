@@ -7,6 +7,8 @@ import { AiOutlineMedicineBox } from 'react-icons/ai';
 import { GiSmokeBomb } from 'react-icons/gi';
 import { useState } from 'react';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 import { getRoom } from '@/libs/supabaseApis';
 import LoadingSpinner from '../../loading';
