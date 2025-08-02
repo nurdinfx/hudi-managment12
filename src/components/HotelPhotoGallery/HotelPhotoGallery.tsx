@@ -3,7 +3,8 @@
 import { FC, useState } from 'react';
 import Image from 'next/image';
 
-import { Image as ImageType } from '@/models/room';
+// Support both string arrays and object arrays for images
+type ImageType = string | { url: string; _key?: string };
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { MdCancel } from 'react-icons/md';
 
