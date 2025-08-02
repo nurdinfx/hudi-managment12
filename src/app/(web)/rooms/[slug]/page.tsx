@@ -61,6 +61,13 @@ const RoomDetails = (props: { params: { slug: string } }) => {
   };
 
   const handleBookNowClick = async () => {
+    // Check if user is authenticated
+    if (!session) {
+      toast.error('Please sign in to book a room');
+      router.push('/auth');
+      return;
+    }
+
     if (!checkinDate || !checkoutDate)
       return toast.error('Please provide checkin / checkout date');
 
