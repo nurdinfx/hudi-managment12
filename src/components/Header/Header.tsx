@@ -71,15 +71,12 @@ const Header = () => {
         </ul>
       </div>
 
-      <ul className='flex items-center justify-between w-full md:w-1/2 mt-4 gap-4'>
+      <ul className='flex items-center justify-between w-full md:w-1/3 mt-4 gap-6'>
         <li className='hover:-translate-y-2 duration-500 transition-all'>
           <Link href='/'>Home</Link>
         </li>
         <li className='hover:-translate-y-2 duration-500 transition-all'>
           <Link href='/rooms'>Rooms</Link>
-        </li>
-        <li className='hover:-translate-y-2 duration-500 transition-all'>
-          <Link href='/get-started'>Get Started</Link>
         </li>
         <li className='hover:-translate-y-2 duration-500 transition-all'>
           <Link href='/contact'>Contact</Link>
