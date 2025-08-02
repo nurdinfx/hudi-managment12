@@ -217,6 +217,27 @@ const RoomDetails = (props: { params: { slug: string } }) => {
           </div>
         </div>
       </div>
+
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        totalAmount={calcNumDays() > 0 ? calcNumDays() * (room.price - (room.price / 100) * room.discount) : 0}
+        onPaymentMethodSelect={handlePaymentMethodSelect}
+        isProcessing={isProcessingPayment}
+      />
+
+      {/* Payment Instructions Modal */}
+      {paymentData && (
+        <PaymentInstructions
+          isOpen={isInstructionsOpen}
+          onClose={() => setIsInstructionsOpen(false)}
+          paymentMethod={paymentData.method}
+          referenceNumber={paymentData.reference}
+          amount={paymentData.amount}
+          expiresAt={paymentData.expiresAt}
+        />
+      )}
     </div>
   );
 };
