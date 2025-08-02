@@ -7,6 +7,7 @@ process.env.NODE_OPTIONS = '--max-old-space-size=4096';
 
 console.log('Starting development server with increased memory allocation...');
 console.log('Memory limit: 4GB');
+console.log('Running: npx next dev');
 
 const child = spawn('npx', ['next', 'dev'], {
   stdio: 'inherit',
