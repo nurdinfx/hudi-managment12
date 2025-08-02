@@ -11,17 +11,6 @@ import {
   type SomaliPaymentMethod
 } from '@/libs/supabasePaymentApis';
 
-// Somali Payment Methods
-export type SomaliPaymentMethod = 
-  | 'evc' 
-  | 'zaad' 
-  | 'sahal' 
-  | 'premier_bank' 
-  | 'amtel' 
-  | 'dahabshiil' 
-  | 'world_remit' 
-  | 'taaj';
-
 export interface SomaliPaymentRequest {
   checkinDate: string;
   checkoutDate: string;
@@ -30,80 +19,25 @@ export interface SomaliPaymentRequest {
   numberOfDays: number;
   hotelRoomSlug: string;
   paymentMethod: SomaliPaymentMethod;
-  phoneNumber?: string; // For mobile money payments
-  accountNumber?: string; // For bank transfers
+  phoneNumber?: string;
+  accountNumber?: string;
+  language?: 'en' | 'ar';
 }
 
 export interface SomaliPaymentResponse {
   success: boolean;
   paymentId: string;
   amount: number;
+  baseAmount: number;
+  feeAmount: number;
   currency: string;
   paymentMethod: SomaliPaymentMethod;
   instructions: string;
+  instructionsAr?: string;
   referenceNumber: string;
   expiresAt: string;
+  provider: string;
 }
-
-// Payment method configurations
-const PAYMENT_METHODS = {
-  evc: {
-    name: 'EVC Plus',
-    instructions: 'Send payment to: 252-61-1234567\nReference: {reference}',
-    minAmount: 1,
-    maxAmount: 10000,
-    fee: 0.5, // 0.5% fee
-  },
-  zaad: {
-    name: 'Zaad',
-    instructions: 'Send payment to: 252-61-7654321\nReference: {reference}',
-    minAmount: 1,
-    maxAmount: 5000,
-    fee: 0.3, // 0.3% fee
-  },
-  sahal: {
-    name: 'Sahal',
-    instructions: 'Send payment to: 252-61-9876543\nReference: {reference}',
-    minAmount: 1,
-    maxAmount: 3000,
-    fee: 0.4, // 0.4% fee
-  },
-  premier_bank: {
-    name: 'Premier Bank',
-    instructions: 'Bank Transfer to:\nAccount: 1234567890\nReference: {reference}',
-    minAmount: 10,
-    maxAmount: 50000,
-    fee: 0, // No fee for bank transfers
-  },
-  amtel: {
-    name: 'Amtel',
-    instructions: 'Send payment to: 252-61-1111111\nReference: {reference}',
-    minAmount: 1,
-    maxAmount: 2000,
-    fee: 0.5, // 0.5% fee
-  },
-  dahabshiil: {
-    name: 'Dahabshiil',
-    instructions: 'Send payment to: 252-61-2222222\nReference: {reference}',
-    minAmount: 5,
-    maxAmount: 10000,
-    fee: 0.2, // 0.2% fee
-  },
-  world_remit: {
-    name: 'World Remit',
-    instructions: 'Send payment via World Remit\nReference: {reference}',
-    minAmount: 10,
-    maxAmount: 20000,
-    fee: 1.0, // 1% fee
-  },
-  taaj: {
-    name: 'Taaj',
-    instructions: 'Send payment to: 252-61-3333333\nReference: {reference}',
-    minAmount: 1,
-    maxAmount: 1500,
-    fee: 0.3, // 0.3% fee
-  },
-};
 
 export async function POST(req: Request) {
   try {
