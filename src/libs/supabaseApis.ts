@@ -4,11 +4,6 @@ import { CreateReviewDto, UpdateReviewDto } from '@/models/review'
 
 // Room operations
 export async function getFeaturedRoom() {
-  if (!supabase) {
-    console.warn('Supabase not configured')
-    return null
-  }
-
   try {
     const { data, error } = await supabase
       .from('rooms')
