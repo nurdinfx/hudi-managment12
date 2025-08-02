@@ -7,8 +7,8 @@ import Link from 'next/link';
 import axios from 'axios';
 import { signOut } from 'next-auth/react';
 
-import { getUserBookings } from '@/libs/apis';
-import { User } from '@/models/user';
+import { getUserBookings } from '@/libs/supabaseApis';
+import { User } from '@/models/supabaseTypes';
 import LoadingSpinner from '../../loading';
 import { useState } from 'react';
 import { BsJournalBookmarkFill } from 'react-icons/bs';
