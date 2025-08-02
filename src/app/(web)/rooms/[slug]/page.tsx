@@ -12,6 +12,8 @@ import { getRoom } from '@/libs/supabaseApis';
 import LoadingSpinner from '../../loading';
 import HotelPhotoGallery from '@/components/HotelPhotoGallery/HotelPhotoGallery';
 import BookRoomCta from '@/components/BookRoomCta/BookRoomCta';
+import PaymentModal from '@/components/PaymentModal/PaymentModal';
+import PaymentInstructions from '@/components/PaymentInstructions/PaymentInstructions';
 import toast from 'react-hot-toast';
 import RoomReview from '@/components/RoomReview/RoomReview';
 
