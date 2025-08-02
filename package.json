@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "set NODE_OPTIONS=--max-old-space-size=4096 --max-semi-space-size=512 && next dev",
-    "dev:memory": "node dev-server.js",
-    "dev:light": "set NODE_OPTIONS=--max-old-space-size=2048 --max-semi-space-size=256 && next dev --turbo",
-    "build": "set NODE_OPTIONS=--max-old-space-size=4096 && next build",
+    "dev": "NODE_OPTIONS=\"--max-old-space-size=4096 --max-semi-space-size=512\" next dev",
+    "dev:memory": "node start-dev.js",
+    "dev:light": "NODE_OPTIONS=\"--max-old-space-size=2048 --max-semi-space-size=256\" next dev --turbo",
+    "build": "NODE_OPTIONS=\"--max-old-space-size=4096\" next build",
     "start": "next start",
     "lint": "next lint",
-    "clean": "rmdir /s /q .next && npm run dev"
+    "clean": "rm -rf .next && npm run dev"
   },
   "dependencies": {
     "@sanity/vision": "^3.17.0",
