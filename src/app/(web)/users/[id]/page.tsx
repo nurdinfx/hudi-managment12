@@ -235,7 +235,11 @@ const UserDetails = (props: { params: { id: string } }) => {
           {currentNav === 'amount' ? (
             isLoadingBookings ? (
               <div className='text-center py-10'>
-                <LoadingSpinner />
+                <SoftLoader
+                  size="medium"
+                  color="primary"
+                  text="Loading spending data"
+                />
               </div>
             ) : userBookings && userBookings.length > 0 ? (
               <Chart userBookings={userBookings} />
