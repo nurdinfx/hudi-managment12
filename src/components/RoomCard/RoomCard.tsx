@@ -1,8 +1,9 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import Image from 'next/image';
 
 import { Room } from '@/models/supabaseTypes';
 import Link from 'next/link';
+import QuickBookModal from '@/components/QuickBookModal/QuickBookModal';
 
 type Props = {
   room: Room;
