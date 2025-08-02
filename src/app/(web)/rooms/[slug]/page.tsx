@@ -8,7 +8,7 @@ import { GiSmokeBomb } from 'react-icons/gi';
 import { useState } from 'react';
 import axios from 'axios';
 
-import { getRoom } from '@/libs/apis';
+import { getRoom } from '@/libs/supabaseApis';
 import LoadingSpinner from '../../loading';
 import HotelPhotoGallery from '@/components/HotelPhotoGallery/HotelPhotoGallery';
 import BookRoomCta from '@/components/BookRoomCta/BookRoomCta';
