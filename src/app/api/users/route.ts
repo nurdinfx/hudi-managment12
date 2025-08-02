@@ -48,7 +48,7 @@ export async function POST(req: Request, res: Response) {
 
     if (alreadyExists) {
       data = await updateReview({
-        reviewId: alreadyExists._id,
+        reviewId: alreadyExists.id,
         reviewText,
         userRating: ratingValue,
       });
