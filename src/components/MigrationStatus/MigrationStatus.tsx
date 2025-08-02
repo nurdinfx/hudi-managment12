@@ -80,8 +80,16 @@ const MigrationStatus = () => {
     <div className={`fixed bottom-4 right-4 p-4 rounded-lg shadow-lg text-white ${
       status?.success ? 'bg-green-500' : 'bg-red-500'
     }`}>
-      <div className="text-sm font-semibold mb-1">
-        🏨 Hotel Management System
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-sm font-semibold">
+          🏨 Hotel Management System
+        </div>
+        <button
+          onClick={() => setShowWidget(false)}
+          className="text-white hover:text-gray-200 text-lg ml-2"
+        >
+          ×
+        </button>
       </div>
       <div className="text-xs">
         {status?.success ? (
