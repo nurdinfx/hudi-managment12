@@ -148,18 +148,28 @@ const Auth = () => {
                   key={provider.id}
                   onClick={() => handleSignIn(provider.id)}
                   disabled={loading === provider.id}
-                  className='w-full flex items-center justify-center px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
-                >
-                  {loading === provider.id ? (
-                    <div className='w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-3'></div>
-                  ) : (
-                    <svg className='w-5 h-5 mr-3' fill='currentColor' viewBox='0 0 20 20'>
+                className='w-full flex items-center justify-center px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 disabled:opacity-80 disabled:cursor-not-allowed disabled:scale-100 group'
+              >
+                {loading === provider.id ? (
+                  <div className="flex items-center">
+                    <div className='w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3'></div>
+                    <div className="flex">
+                      <span className="animate-soft-bounce mr-1">.</span>
+                      <span className="animate-soft-bounce mr-1" style={{animationDelay: '0.2s'}}>.</span>
+                      <span className="animate-soft-bounce" style={{animationDelay: '0.4s'}}>.</span>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <svg className='w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300' fill='currentColor' viewBox='0 0 20 20'>
                       <path fillRule='evenodd' d='M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z' clipRule='evenodd' />
                     </svg>
-                  )}
-                  <span className='font-medium'>
-                    {loading === provider.id ? 'Signing in...' : '🚀 Try Demo Account'}
-                  </span>
+                    <span className='font-medium'>🚀 Try Demo Account</span>
+                  </>
+                )}
+                {loading === provider.id && (
+                  <span className='font-medium ml-2 opacity-90'>Signing in</span>
+                )}
                 </button>
               );
             }
