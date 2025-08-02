@@ -59,6 +59,8 @@ const QuickBookModal = ({ isOpen, onClose, room }: QuickBookModalProps) => {
   const totalAmount = calcNumDays() > 0 ? calcNumDays() * discountPrice : 0;
 
   const handleBookNowClick = () => {
+    console.log('Book now clicked in QuickBookModal');
+
     // Check if user is authenticated
     if (!session) {
       toast.error('Please sign in to book a room');
@@ -68,13 +70,22 @@ const QuickBookModal = ({ isOpen, onClose, room }: QuickBookModalProps) => {
     }
 
     if (!checkinDate || !checkoutDate) {
-      return toast.error('Please provide checkin / checkout date');
+      toast.error('Please select check-in and check-out dates');
+      return;
     }
 
     if (checkinDate > checkoutDate) {
-      return toast.error('Please choose a valid checkin period');
+      toast.error('Check-out date must be after check-in date');
+      return;
     }
 
+    const days = calcNumDays();
+    if (days <= 0) {
+      toast.error('Please select valid dates');
+      return;
+    }
+
+    console.log('Opening payment modal...');
     setIsPaymentModalOpen(true);
   };
 
