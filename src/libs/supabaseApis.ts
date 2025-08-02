@@ -25,6 +25,11 @@ export async function getFeaturedRoom() {
 }
 
 export async function getRooms() {
+  if (!supabase) {
+    console.warn('Supabase not configured')
+    return []
+  }
+
   try {
     const { data, error } = await supabase
       .from('rooms')
@@ -40,6 +45,11 @@ export async function getRooms() {
 }
 
 export async function getRoom(slug: string) {
+  if (!supabase) {
+    console.warn('Supabase not configured')
+    return null
+  }
+
   try {
     const { data, error } = await supabase
       .from('rooms')
