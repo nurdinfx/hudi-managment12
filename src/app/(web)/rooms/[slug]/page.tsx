@@ -188,21 +188,27 @@ const RoomDetails = (props: { params: { slug: string } }) => {
               handleBookNowClick={handleBookNowClick}
             />
             <div className='mt-4'>
-              <label>Payment Method:</label>
-              <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)}>
-                <option value='evc'>EVC Plus</option>
-                <option value='zaad'>Zaad</option>
+              <label className='block text-sm font-medium mb-2'>Payment Method:</label>
+              <select
+                value={paymentMethod}
+                onChange={e => setPaymentMethod(e.target.value)}
+                className='w-full p-2 border rounded-md mb-2'
+              >
+                <option value='evc'>EVC Plus (Hormuud)</option>
+                <option value='zaad'>Zaad Service (Telesom)</option>
+                <option value='edahab'>eDahab (Mobile App)</option>
+                <option value='sahal'>Sahal (Golis)</option>
                 <option value='premier_bank'>Premier Bank</option>
-                <option value='amtel'>Amtel</option>
-                {/* Add more as needed */}
+                <option value='dahabshiil'>Dahabshiil</option>
+                <option value='world_remit'>WorldRemit</option>
               </select>
-              {['evc', 'zaad', 'sahal', 'amtel', 'dahabshiil', 'taaj'].includes(paymentMethod) && (
+              {['evc', 'zaad', 'sahal', 'edahab', 'amtel', 'dahabshiil', 'taaj'].includes(paymentMethod) && (
                 <input
                   type='text'
-                  placeholder='Phone Number'
+                  placeholder='Phone Number (+252611234567)'
                   value={phoneNumber}
                   onChange={e => setPhoneNumber(e.target.value)}
-                  className='mt-2 block border p-2 rounded w-full'
+                  className='w-full p-2 border rounded-md'
                 />
               )}
               {paymentMethod === 'premier_bank' && (
@@ -211,7 +217,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
                   placeholder='Account Number'
                   value={accountNumber}
                   onChange={e => setAccountNumber(e.target.value)}
-                  className='mt-2 block border p-2 rounded w-full'
+                  className='w-full p-2 border rounded-md'
                 />
               )}
             </div>
