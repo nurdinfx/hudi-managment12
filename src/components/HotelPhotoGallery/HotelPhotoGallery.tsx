@@ -42,7 +42,7 @@ const HotelPhotoGallery: FC<{ photos: ImageType[] }> = ({ photos }) => {
         <div className='h-[540px] relative rounded-2xl overflow-hidden'>
           <div className='hidden md:flex justify-center items-center w-full h-full'>
             <Image
-              src={photos[0].url}
+              src={typeof photos[0] === 'string' ? photos[0] : photos[0]?.url || '/images/hero-1.jpeg'}
               alt={`Room Photo ${currenPhotoIndex + 1}`}
               className='img scale-animation cursor-pointer'
               width={150}
