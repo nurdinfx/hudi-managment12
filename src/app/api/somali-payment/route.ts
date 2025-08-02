@@ -183,15 +183,16 @@ export async function POST(req: Request) {
 
 // Get available payment methods
 export async function GET() {
-  const methods = Object.entries(PAYMENT_METHODS).map(([key, config]) => ({
-    id: key,
-    name: config.name,
-    minAmount: config.minAmount,
-    maxAmount: config.maxAmount,
-    fee: config.fee,
-    type: ['evc', 'zaad', 'sahal', 'amtel', 'dahabshiil', 'taaj'].includes(key) ? 'mobile_money' : 
-          key === 'premier_bank' ? 'bank_transfer' : 'remittance',
-  }));
+  try {
+    const methods = getAvailablePaymentMethods();
 
-  return NextResponse.json({ methods });
+    return NextResponse.json({
+      methods,
+      success: true,
+      total: methods.length
+    });
+  } catch (error: any) {
+    console.error('Error fetching payment methods:', error);
+    return new NextResponse('Failed to fetch payment methods', { status: 500 });
+  }
 }
