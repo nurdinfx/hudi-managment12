@@ -15,44 +15,28 @@ const Home = async () => {
     featuredRoom = null;
   }
 
-  // Provide fallback data when Sanity is not configured or fails
+  // Provide fallback data when database is not available
   if (!featuredRoom) {
     featuredRoom = {
-      _id: 'fallback-room',
+      id: 'fallback-room',
       name: 'Luxury Suite',
       description: 'Experience luxury and comfort in our premium suite with stunning views and world-class amenities.',
       price: 299,
       discount: 50,
       images: [
-        {
-          _key: 'fallback-image-1',
-          url: '/images/hero-1.jpeg'
-        },
-        {
-          _key: 'fallback-image-2',
-          url: '/images/hero-2.jpeg'
-        },
-        {
-          _key: 'fallback-image-3',
-          url: '/images/hero-3.jpeg'
-        }
+        'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+        'https://images.unsplash.com/photo-1520637836862-4d197d17c50a?w=800',
+        'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800'
       ],
-      coverImage: {
-        url: '/images/hero-1.jpeg'
-      },
+      cover_image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
       type: 'suite',
       dimension: '450 sq ft',
-      numberOfBeds: 2,
-      offeredAmenities: [
-        { _key: 'wifi', amenity: 'WiFi', icon: 'wifi' },
-        { _key: 'tv', amenity: 'TV', icon: 'tv' },
-        { _key: 'ac', amenity: 'Air Conditioning', icon: 'snowflake' },
-        { _key: 'minibar', amenity: 'Mini Bar', icon: 'glass' }
-      ],
-      slug: { _type: 'slug', current: 'luxury-suite' },
-      specialNote: 'Special rates available for extended stays.',
-      isBooked: false,
-      isFeatured: true
+      number_of_beds: 2,
+      amenities: ['WiFi', 'TV', 'Air Conditioning', 'Mini Bar'],
+      slug: 'luxury-suite',
+      special_note: 'Special rates available for extended stays.',
+      is_booked: false,
+      is_featured: true
     };
   }
 
