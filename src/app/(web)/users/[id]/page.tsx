@@ -11,6 +11,8 @@ import { getUserBookings } from '@/libs/supabaseApis';
 import { User } from '@/models/supabaseTypes';
 import LoadingSpinner from '../../loading';
 import { useState } from 'react';
+import SkeletonLoader from '@/components/SkeletonLoader/SkeletonLoader';
+import SoftLoader from '@/components/SoftLoader/SoftLoader';
 import { BsJournalBookmarkFill } from 'react-icons/bs';
 import { GiMoneyStack } from 'react-icons/gi';
 import Table from '@/components/Table/Table';
