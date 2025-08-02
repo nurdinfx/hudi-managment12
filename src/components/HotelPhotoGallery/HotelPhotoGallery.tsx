@@ -52,7 +52,7 @@ const HotelPhotoGallery: FC<{ photos: ImageType[] }> = ({ photos }) => {
           </div>
           <div className='md:hidden flex justify-center items-center w-full h-full'>
             <Image
-              src={photos[currenPhotoIndex].url}
+              src={typeof photos[currenPhotoIndex] === 'string' ? photos[currenPhotoIndex] : photos[currenPhotoIndex]?.url || '/images/hero-1.jpeg'}
               alt={`Room Photo ${currenPhotoIndex + 1}`}
               className='img'
               width={150}
@@ -80,7 +80,7 @@ const HotelPhotoGallery: FC<{ photos: ImageType[] }> = ({ photos }) => {
               <Image
                 width={150}
                 height={150}
-                src={photo.url}
+                src={typeof photo === 'string' ? photo : photo?.url || '/images/hero-1.jpeg'}
                 alt={`Room Photo ${index + 2}`}
                 className='img scale-animation'
               />
@@ -94,7 +94,7 @@ const HotelPhotoGallery: FC<{ photos: ImageType[] }> = ({ photos }) => {
               <Image
                 width={150}
                 height={150}
-                src={photos[maximumVisiblePhotos - 1].url}
+                src={typeof photos[maximumVisiblePhotos - 1] === 'string' ? photos[maximumVisiblePhotos - 1] : photos[maximumVisiblePhotos - 1]?.url || '/images/hero-1.jpeg'}
                 alt={`Room Photo ${maximumVisiblePhotos}`}
                 className='img'
               />
