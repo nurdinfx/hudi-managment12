@@ -62,10 +62,16 @@ const RoomDetails = (props: { params: { slug: string } }) => {
     if (checkinDate > checkoutDate)
       return toast.error('Please choose a valid checkin period');
 
-    const numberOfDays = calcNumDays();
-    const hotelRoomSlug = room.slug || slug;
+    setIsPaymentModalOpen(true);
+  };
+
+  const handlePaymentMethodSelect = async (method: string, phoneNumber?: string, accountNumber?: string) => {
+    setIsProcessingPayment(true);
 
     try {
+      const numberOfDays = calcNumDays();
+      const hotelRoomSlug = room.slug || slug;
+
       const { data } = await axios.post('/api/somali-payment', {
         checkinDate,
         checkoutDate,
@@ -73,12 +79,24 @@ const RoomDetails = (props: { params: { slug: string } }) => {
         children: noOfChildren,
         numberOfDays,
         hotelRoomSlug,
-        paymentMethod,
-        phoneNumber: ['evc', 'zaad', 'sahal', 'amtel', 'dahabshiil', 'taaj'].includes(paymentMethod) ? phoneNumber : undefined,
-        accountNumber: paymentMethod === 'premier_bank' ? accountNumber : undefined,
+        paymentMethod: method,
+        phoneNumber: ['evc', 'zaad', 'sahal', 'edahab'].includes(method) ? phoneNumber : undefined,
+        accountNumber: method === 'premier_bank' ? accountNumber : undefined,
       });
-      if (data && data.instructions) {
-        setPaymentInstructions(data.instructions);
+
+      if (data && data.reference) {
+        const discountPrice = room.price - (room.price / 100) * room.discount;
+        const totalAmount = (calcNumDays() || 1) * discountPrice;
+
+        setPaymentData({
+          method,
+          reference: data.reference,
+          amount: totalAmount,
+          expiresAt: data.expiresAt || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        });
+
+        setIsPaymentModalOpen(false);
+        setIsInstructionsOpen(true);
         toast.success('Payment instructions generated!');
       } else {
         toast.error('Failed to generate payment instructions');
@@ -86,6 +104,8 @@ const RoomDetails = (props: { params: { slug: string } }) => {
     } catch (error: any) {
       console.log('Error: ', error);
       toast.error(error?.response?.data || 'An error occurred');
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
