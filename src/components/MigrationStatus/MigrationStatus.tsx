@@ -5,6 +5,11 @@ import { useEffect, useState } from 'react';
 const MigrationStatus = () => {
   const [status, setStatus] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showWidget, setShowWidget] = useState(true);
+
+  // Allow hiding the widget in production if needed
+  const isProduction = process.env.NODE_ENV === 'production';
+  const shouldShow = !isProduction || process.env.NEXT_PUBLIC_SHOW_STATUS === 'true';
 
   useEffect(() => {
     const checkStatus = async () => {
