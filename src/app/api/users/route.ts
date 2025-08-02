@@ -7,7 +7,7 @@ import {
   createReview,
   getUserData,
   updateReview,
-} from '@/libs/apis';
+} from '@/libs/supabaseApis';
 
 export async function GET(req: Request, res: Response) {
   const session = await getServerSession(authOptions);
