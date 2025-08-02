@@ -19,12 +19,24 @@ const child = spawn(nextBin, ['dev', '--port', '3000'], {
   }
 });
 
+// Set a timeout to detect if Next.js is hanging
+let hasOutput = false;
+const startupTimeout = setTimeout(() => {
+  if (!hasOutput) {
+    console.log('⏰ Next.js seems to be hanging after 30 seconds, this might indicate a compilation issue');
+  }
+}, 30000);
+
 // Pipe output with prefixes
 child.stdout.on('data', (data) => {
+  hasOutput = true;
+  clearTimeout(startupTimeout);
   process.stdout.write(`[NEXT] ${data}`);
 });
 
 child.stderr.on('data', (data) => {
+  hasOutput = true;
+  clearTimeout(startupTimeout);
   process.stderr.write(`[NEXT-ERR] ${data}`);
 });
 
