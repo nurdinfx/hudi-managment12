@@ -3,7 +3,7 @@
 import { FC } from 'react';
 import Image from 'next/image';
 
-import { Room } from '@/models/room';
+import { Room } from '@/models/supabaseTypes';
 import Link from 'next/link';
 
 type Props = {
