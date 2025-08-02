@@ -26,10 +26,15 @@ const RoomDetails = (props: { params: { slug: string } }) => {
   const [checkoutDate, setCheckoutDate] = useState<Date | null>(null);
   const [adults, setAdults] = useState(1);
   const [noOfChildren, setNoOfChildren] = useState(0);
-  const [paymentInstructions, setPaymentInstructions] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<string>('evc'); // Default to EVC, can be changed to a selector
-  const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [accountNumber, setAccountNumber] = useState<string>('');
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentData, setPaymentData] = useState<{
+    method: string;
+    reference: string;
+    amount: number;
+    expiresAt: string;
+  } | null>(null);
 
   const fetchRoom = async () => getRoom(slug);
 
