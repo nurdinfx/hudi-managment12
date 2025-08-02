@@ -246,13 +246,31 @@ const QuickBookModal = ({ isOpen, onClose, room }: QuickBookModalProps) => {
             <button
               onClick={handleBookNowClick}
               disabled={room.is_booked || isProcessingPayment}
-              className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-300 ${
-                room.is_booked 
-                  ? 'bg-gray-400 text-gray-700 cursor-not-allowed' 
-                  : 'bg-primary text-white hover:bg-primary/90 hover:shadow-lg'
+              className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-300 group ${
+                room.is_booked
+                  ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                  : isProcessingPayment
+                  ? 'bg-primary/80 text-white cursor-not-allowed'
+                  : 'bg-primary text-white hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02]'
               }`}
             >
-              {room.is_booked ? '🔒 Room Booked' : '💳 Continue to Payment'}
+              {room.is_booked ? (
+                '🔒 Room Booked'
+              ) : isProcessingPayment ? (
+                <div className="flex items-center justify-center">
+                  <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2'></div>
+                  <span>Processing</span>
+                  <div className="flex ml-2">
+                    <span className="animate-soft-bounce">.</span>
+                    <span className="animate-soft-bounce" style={{animationDelay: '0.2s'}}>.</span>
+                    <span className="animate-soft-bounce" style={{animationDelay: '0.4s'}}>.</span>
+                  </div>
+                </div>
+              ) : (
+                <span className="group-hover:scale-105 transition-transform duration-300">
+                  💳 Continue to Payment
+                </span>
+              )}
             </button>
 
             {!session && (
