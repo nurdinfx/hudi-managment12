@@ -10,7 +10,7 @@ import {
 } from '@/libs/supabaseApis';
 
 export async function GET(req: Request, res: Response) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptionsSupabase);
 
   if (!session) {
     return new NextResponse('Authentication Required', { status: 500 });
@@ -27,7 +27,7 @@ export async function GET(req: Request, res: Response) {
 }
 
 export async function POST(req: Request, res: Response) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptionsSupabase);
 
   if (!session) {
     return new NextResponse('Authentication Required', { status: 500 });
