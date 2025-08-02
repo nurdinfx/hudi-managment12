@@ -252,18 +252,24 @@ export async function getRoomReviews(roomId: string) {
   try {
     const { data, error } = await supabase
       .from('reviews')
-      .select(`
-        *,
-        users:user_id (
-          name,
-          image
-        )
-      `)
+      .select('*')
       .eq('room_id', roomId)
       .order('created_at', { ascending: false })
 
     if (error) throw error
-    return data || []
+
+    // Manually join with users data for mock client compatibility
+    if (data) {
+      const usersResponse = await supabase.from('users').select('*')
+      const users = usersResponse.data || []
+
+      return data.map((review: any) => ({
+        ...review,
+        users: users.find((user: any) => user.id === review.user_id) || null
+      }))
+    }
+
+    return []
   } catch (error) {
     console.error('Error fetching room reviews:', error)
     return []
