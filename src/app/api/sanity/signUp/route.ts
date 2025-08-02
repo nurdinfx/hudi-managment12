@@ -1,8 +1,12 @@
-import { signUpHandler } from 'next-auth-sanity';
+// This route has been removed as the app now uses NextAuth with Supabase
+// Authentication is handled through /auth page with OAuth providers (Google, GitHub)
+import { NextResponse } from 'next/server';
 
-import sanityClient from '@/libs/sanity';
-
-// Only create handler if sanityClient is available
-export const POST = sanityClient ? signUpHandler(sanityClient) : async () => {
-  return new Response('Sanity client not configured', { status: 500 });
-};
+export async function POST() {
+  return NextResponse.json(
+    { 
+      error: 'This signup method is no longer available. Please use the /auth page to sign in with Google or GitHub.' 
+    },
+    { status: 410 }
+  );
+}
