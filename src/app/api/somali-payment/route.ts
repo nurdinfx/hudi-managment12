@@ -1,7 +1,15 @@
 import { authOptions } from '@/libs/auth';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
-import { getRoom } from '@/libs/apis';
+import { getRoom } from '@/libs/supabaseApis';
+import {
+  createPayment,
+  PAYMENT_METHODS,
+  generatePaymentReference,
+  formatPaymentInstructions,
+  getAvailablePaymentMethods,
+  type SomaliPaymentMethod
+} from '@/libs/supabasePaymentApis';
 
 // Somali Payment Methods
 export type SomaliPaymentMethod = 
@@ -243,4 +251,4 @@ export async function GET() {
   }));
 
   return NextResponse.json({ methods });
-} 
+}
