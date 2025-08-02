@@ -109,7 +109,7 @@ const HotelPhotoGallery: FC<{ photos: ImageType[] }> = ({ photos }) => {
           <div className='fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-90 z-[55]'>
             <div className='h-[75vh] w-[320px] md:w-[700px] relative'>
               <Image
-                src={photos[currenPhotoIndex].url}
+                src={typeof photos[currenPhotoIndex] === 'string' ? photos[currenPhotoIndex] : photos[currenPhotoIndex]?.url || '/images/hero-1.jpeg'}
                 alt={`Room Photo ${currenPhotoIndex + 1}`}
                 width={150}
                 height={150}
