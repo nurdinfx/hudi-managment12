@@ -67,9 +67,23 @@ const Rooms = () => {
       />
 
       {isLoading ? (
-        <div className="flex justify-center items-center mt-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          <span className="ml-3 text-lg">Loading rooms...</span>
+        <div className="mt-20">
+          <div className="text-center mb-8">
+            <SoftLoader
+              size="medium"
+              color="primary"
+              text="Finding your perfect room"
+            />
+          </div>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+            {Array.from({ length: 8 }).map((_, index) => (
+              <SkeletonLoader
+                key={index}
+                variant="room-card"
+                className="animate-soft-pulse"
+              />
+            ))}
+          </div>
         </div>
       ) : error ? (
         <div className="text-center mt-20">
