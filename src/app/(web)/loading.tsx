@@ -1,7 +1,13 @@
+import SoftLoader from '@/components/SoftLoader/SoftLoader';
+
 const LoadingSpinner = () => (
-  <div className='flex items-center justify-center h-screen'>
-    <div className='animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900' />
-  </div>
+  <SoftLoader 
+    size="large" 
+    color="primary"
+    text="Loading your experience"
+    fullScreen={true}
+    overlay={false}
+  />
 );
 
 export default LoadingSpinner;
