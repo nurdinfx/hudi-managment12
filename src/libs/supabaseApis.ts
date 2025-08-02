@@ -108,20 +108,24 @@ export async function getUserBookings(userId: string) {
   try {
     const { data, error } = await supabase
       .from('bookings')
-      .select(`
-        *,
-        rooms:room_id (
-          id,
-          name,
-          slug,
-          price
-        )
-      `)
+      .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
 
     if (error) throw error
-    return data || []
+
+    // Manually join with rooms data for mock client compatibility
+    if (data) {
+      const roomsResponse = await supabase.from('rooms').select('*')
+      const rooms = roomsResponse.data || []
+
+      return data.map((booking: any) => ({
+        ...booking,
+        rooms: rooms.find((room: any) => room.id === booking.room_id) || null
+      }))
+    }
+
+    return []
   } catch (error) {
     console.error('Error fetching user bookings:', error)
     return []
