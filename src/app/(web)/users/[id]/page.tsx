@@ -161,7 +161,7 @@ const UserDetails = (props: { params: { id: string } }) => {
           </p>
 
           <p className='text-xs py-2 font-medium'>
-            Joined In {userData._createdAt.split('T')[0]}
+            Joined In {(userData.created_at || userData._createdAt || new Date().toISOString()).split('T')[0]}
           </p>
           <div className='md:hidden flex items-center my-2'>
             <p className='mr-2'>Sign out</p>
