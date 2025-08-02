@@ -9,7 +9,7 @@ console.log('Starting development server with increased memory allocation...');
 console.log('Memory limit: 4GB');
 console.log('Running: npx next dev');
 
-const child = spawn('npx', ['next', 'dev'], {
+const child = spawn('npx', ['next', 'dev', '--port', '3000'], {
   stdio: 'inherit',
   env: {
     ...process.env,
