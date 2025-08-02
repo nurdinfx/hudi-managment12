@@ -100,15 +100,15 @@ const RoomDetails = (props: { params: { slug: string } }) => {
               <h2 className='font-bold text-left text-lg md:text-2xl'>
                 {room.name} ({room.dimension})
               </h2>
-              <div className='flex my-11'>
-                {room.offeredAmenities.map(amenity => (
+              <div className='flex my-11 overflow-x-auto'>
+                {(room.amenities || room.offeredAmenities || []).map((amenity, index) => (
                   <div
-                    key={amenity._key}
-                    className='md:w-44 w-fit text-center px-2 md:px-0 h-20 md:h-40 mr-3 bg-[#eff0f2] dark:bg-gray-800 rounded-lg grid place-content-center'
+                    key={typeof amenity === 'string' ? amenity : amenity._key || index}
+                    className='md:w-44 w-fit text-center px-2 md:px-0 h-20 md:h-40 mr-3 bg-[#eff0f2] dark:bg-gray-800 rounded-lg grid place-content-center flex-shrink-0'
                   >
-                    <i className={`fa-solid ${amenity.icon} md:text-2xl`}></i>
+                    <i className={`fa-solid ${typeof amenity === 'string' ? 'fa-check' : amenity.icon || 'fa-check'} md:text-2xl`}></i>
                     <p className='text-xs md:text-base pt-3'>
-                      {amenity.amenity}
+                      {typeof amenity === 'string' ? amenity : amenity.amenity}
                     </p>
                   </div>
                 ))}
