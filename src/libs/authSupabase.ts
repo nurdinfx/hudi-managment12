@@ -9,6 +9,10 @@ import { createOrUpdateUser } from './supabaseApis';
 const getProviders = () => {
   const providers = [];
 
+  // Check if we're using demo credentials
+  const isDemo = process.env.GOOGLE_CLIENT_ID?.startsWith('demo-') || 
+                 process.env.GITHUB_CLIENT_ID?.startsWith('demo-');
+
   // Add GitHub provider if credentials are available
   if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
     providers.push(
@@ -29,21 +33,27 @@ const getProviders = () => {
     );
   }
 
-  // Add credentials provider for custom authentication
-  providers.push(
-    CredentialsProvider({
-      name: 'credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(credentials) {
-        // For now, return null since we're using OAuth providers
-        // You can implement custom authentication logic here
-        return null;
-      },
-    })
-  );
+  // Add demo credentials provider if using demo mode
+  if (isDemo) {
+    providers.push(
+      CredentialsProvider({
+        id: 'demo',
+        name: 'Demo Account',
+        credentials: {
+          demo: { label: 'Demo', type: 'text', value: 'demo' }
+        },
+        async authorize(credentials) {
+          // Return a demo user for testing
+          return {
+            id: 'demo-user-123',
+            email: 'demo@hotelzz.com',
+            name: 'Demo User',
+            image: 'https://avatars.githubusercontent.com/u/1?v=4',
+          };
+        },
+      })
+    );
+  }
 
   return providers;
 };
@@ -53,11 +63,16 @@ export const authOptionsSupabase: NextAuthOptions = {
   session: {
     strategy: 'jwt',
   },
-  debug: false,
+  debug: process.env.NODE_ENV === 'development',
   secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-for-development',
   callbacks: {
     async signIn({ user, account, profile }) {
       try {
+        // Skip Supabase operations for demo mode
+        if (account?.provider === 'demo' || user.email?.includes('demo@')) {
+          return true;
+        }
+
         if (user.email && user.name) {
           // Create or update user in Supabase
           await createOrUpdateUser({
@@ -77,6 +92,7 @@ export const authOptionsSupabase: NextAuthOptions = {
       // Persist the OAuth access_token and or refresh_token to the token right after signin
       if (account) {
         token.accessToken = account.access_token;
+        token.provider = account.provider;
       }
       
       if (user) {
