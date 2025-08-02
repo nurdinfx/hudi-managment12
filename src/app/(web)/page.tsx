@@ -50,7 +50,7 @@ const Home = async () => {
       <FeaturedRoom featuredRoom={featuredRoom} />
       <Gallery />
       <NewsLetter />
-      {process.env.NODE_ENV === 'development' && <MigrationStatus />}
+      <SafeMigrationStatus />
     </>
   );
 };
