@@ -28,14 +28,11 @@ const Rooms = () => {
 
   const { data, error, isLoading } = useSWR('get/hotelRooms', fetchData);
 
-  if (error) throw new Error('Cannot fetch data');
-  if (typeof data === 'undefined' && !isLoading)
-    throw new Error('Cannot fetch data');
-
   const filterRooms = (rooms: Room[]) => {
+    if (!rooms || !Array.isArray(rooms)) return [];
+
     return rooms.filter(room => {
       // Apply room type filter
-
       if (
         roomTypeFilter &&
         roomTypeFilter.toLowerCase() !== 'all' &&
@@ -59,7 +56,7 @@ const Rooms = () => {
   const filteredRooms = filterRooms(data || []);
 
   return (
-    <div className='container mx-auto pt-10'>
+    <div className='container mx-auto pt-10 px-4'>
       <Search
         roomTypeFilter={roomTypeFilter}
         searchQuery={searchQuery}
@@ -67,11 +64,32 @@ const Rooms = () => {
         setSearchQuery={setSearchQuery}
       />
 
-      <div className='flex mt-20 justify-between flex-wrap'>
-        {filteredRooms.map(room => (
-          <RoomCard key={room.id || room._id} room={room} />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="flex justify-center items-center mt-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <span className="ml-3 text-lg">Loading rooms...</span>
+        </div>
+      ) : error ? (
+        <div className="text-center mt-20">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <p className="font-bold">Error loading rooms</p>
+            <p>Please try refreshing the page or contact support.</p>
+          </div>
+        </div>
+      ) : filteredRooms.length === 0 ? (
+        <div className="text-center mt-20">
+          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+            <p className="font-bold">No rooms found</p>
+            <p>Try adjusting your search criteria or browse all available rooms.</p>
+          </div>
+        </div>
+      ) : (
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-20'>
+          {filteredRooms.map(room => (
+            <RoomCard key={room.id || room._id} room={room} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
