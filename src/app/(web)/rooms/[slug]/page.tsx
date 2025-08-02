@@ -174,7 +174,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
             <BookRoomCta
               discount={room.discount}
               price={room.price}
-              specialNote={room.specialNote}
+              specialNote={room.special_note || room.specialNote}
               checkinDate={checkinDate}
               setCheckinDate={setCheckinDate}
               checkoutDate={checkoutDate}
@@ -184,7 +184,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
               noOfChildren={noOfChildren}
               setAdults={setAdults}
               setNoOfChildren={setNoOfChildren}
-              isBooked={room.isBooked}
+              isBooked={room.is_booked || room.isBooked}
               handleBookNowClick={handleBookNowClick}
             />
             <div className='mt-4'>
