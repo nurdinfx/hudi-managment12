@@ -1,18 +1,15 @@
 import { authOptions } from '@/libs/auth';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
-import { getRoom } from '@/libs/apis';
-
-// Somali Payment Methods
-export type SomaliPaymentMethod = 
-  | 'evc' 
-  | 'zaad' 
-  | 'sahal' 
-  | 'premier_bank' 
-  | 'amtel' 
-  | 'dahabshiil' 
-  | 'world_remit' 
-  | 'taaj';
+import { getRoom } from '@/libs/supabaseApis';
+import {
+  createPayment,
+  PAYMENT_METHODS,
+  generatePaymentReference,
+  formatPaymentInstructions,
+  getAvailablePaymentMethods,
+  type SomaliPaymentMethod
+} from '@/libs/supabasePaymentApis';
 
 export interface SomaliPaymentRequest {
   checkinDate: string;
@@ -22,80 +19,25 @@ export interface SomaliPaymentRequest {
   numberOfDays: number;
   hotelRoomSlug: string;
   paymentMethod: SomaliPaymentMethod;
-  phoneNumber?: string; // For mobile money payments
-  accountNumber?: string; // For bank transfers
+  phoneNumber?: string;
+  accountNumber?: string;
+  language?: 'en' | 'ar';
 }
 
 export interface SomaliPaymentResponse {
   success: boolean;
   paymentId: string;
   amount: number;
+  baseAmount: number;
+  feeAmount: number;
   currency: string;
   paymentMethod: SomaliPaymentMethod;
   instructions: string;
+  instructionsAr?: string;
   referenceNumber: string;
   expiresAt: string;
+  provider: string;
 }
-
-// Payment method configurations
-const PAYMENT_METHODS = {
-  evc: {
-    name: 'EVC Plus',
-    instructions: 'Send payment to: 252-61-1234567\nReference: {reference}',
-    minAmount: 1,
-    maxAmount: 10000,
-    fee: 0.5, // 0.5% fee
-  },
-  zaad: {
-    name: 'Zaad',
-    instructions: 'Send payment to: 252-61-7654321\nReference: {reference}',
-    minAmount: 1,
-    maxAmount: 5000,
-    fee: 0.3, // 0.3% fee
-  },
-  sahal: {
-    name: 'Sahal',
-    instructions: 'Send payment to: 252-61-9876543\nReference: {reference}',
-    minAmount: 1,
-    maxAmount: 3000,
-    fee: 0.4, // 0.4% fee
-  },
-  premier_bank: {
-    name: 'Premier Bank',
-    instructions: 'Bank Transfer to:\nAccount: 1234567890\nReference: {reference}',
-    minAmount: 10,
-    maxAmount: 50000,
-    fee: 0, // No fee for bank transfers
-  },
-  amtel: {
-    name: 'Amtel',
-    instructions: 'Send payment to: 252-61-1111111\nReference: {reference}',
-    minAmount: 1,
-    maxAmount: 2000,
-    fee: 0.5, // 0.5% fee
-  },
-  dahabshiil: {
-    name: 'Dahabshiil',
-    instructions: 'Send payment to: 252-61-2222222\nReference: {reference}',
-    minAmount: 5,
-    maxAmount: 10000,
-    fee: 0.2, // 0.2% fee
-  },
-  world_remit: {
-    name: 'World Remit',
-    instructions: 'Send payment via World Remit\nReference: {reference}',
-    minAmount: 10,
-    maxAmount: 20000,
-    fee: 1.0, // 1% fee
-  },
-  taaj: {
-    name: 'Taaj',
-    instructions: 'Send payment to: 252-61-3333333\nReference: {reference}',
-    minAmount: 1,
-    maxAmount: 1500,
-    fee: 0.3, // 0.3% fee
-  },
-};
 
 export async function POST(req: Request) {
   try {
@@ -109,6 +51,7 @@ export async function POST(req: Request) {
       paymentMethod,
       phoneNumber,
       accountNumber,
+      language = 'en',
     }: SomaliPaymentRequest = await req.json();
 
     // Validate required fields
@@ -128,9 +71,10 @@ export async function POST(req: Request) {
       return new NextResponse('Invalid payment method', { status: 400 });
     }
 
-    // Validate phone number for mobile money payments
-    if (['evc', 'zaad', 'sahal', 'amtel', 'dahabshiil', 'taaj'].includes(paymentMethod) && !phoneNumber) {
-      return new NextResponse('Phone number required for mobile money payments', { status: 400 });
+    // Validate phone number for mobile money and app payments
+    const mobileMethods = ['evc', 'zaad', 'sahal', 'edahab'];
+    if (mobileMethods.includes(paymentMethod) && !phoneNumber) {
+      return new NextResponse('Phone number required for mobile payments', { status: 400 });
     }
 
     // Validate account number for bank transfers
@@ -150,73 +94,80 @@ export async function POST(req: Request) {
 
     // Get room details
     const room = await getRoom(hotelRoomSlug);
-    
+
     if (!room) {
       return new NextResponse('Room not found', { status: 404 });
     }
-    
+
     const discountPrice = room.price - (room.price / 100) * room.discount;
     const baseAmount = discountPrice * numberOfDays;
-    
+
     // Calculate fees
-    const feeAmount = (baseAmount * PAYMENT_METHODS[paymentMethod].fee) / 100;
+    const methodConfig = PAYMENT_METHODS[paymentMethod];
+    const feeAmount = (baseAmount * methodConfig.fee) / 100;
     const totalAmount = baseAmount + feeAmount;
 
     // Validate amount limits
-    const methodConfig = PAYMENT_METHODS[paymentMethod];
     if (totalAmount < methodConfig.minAmount) {
-      return new NextResponse(`Minimum amount for ${methodConfig.name} is $${methodConfig.minAmount}`, { status: 400 });
+      return new NextResponse(
+        `Minimum amount for ${methodConfig.name} is $${methodConfig.minAmount}`,
+        { status: 400 }
+      );
     }
     if (totalAmount > methodConfig.maxAmount) {
-      return new NextResponse(`Maximum amount for ${methodConfig.name} is $${methodConfig.maxAmount}`, { status: 400 });
+      return new NextResponse(
+        `Maximum amount for ${methodConfig.name} is $${methodConfig.maxAmount}`,
+        { status: 400 }
+      );
     }
 
     // Generate unique payment ID and reference
-    const paymentId = `SOM-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const referenceNumber = `REF-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
-    
+    const { paymentId, referenceNumber } = generatePaymentReference();
+
     // Set expiration time (24 hours from now)
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
-    // Create payment record in Sanity (you'll need to create a payment schema)
+    // Create payment record in Supabase
     const paymentData = {
-      _type: 'payment',
-      paymentId,
-      referenceNumber,
-      userId,
-      roomId: room._id,
+      payment_id: paymentId,
+      reference_number: referenceNumber,
+      user_id: userId,
+      room_id: room.id,
       amount: totalAmount,
-      baseAmount,
-      feeAmount,
+      base_amount: baseAmount,
+      fee_amount: feeAmount,
       currency: 'USD',
-      paymentMethod,
-      status: 'pending',
-      checkinDate: formattedCheckinDate,
-      checkoutDate: formattedCheckoutDate,
+      payment_method: paymentMethod,
+      checkin_date: formattedCheckinDate,
+      checkout_date: formattedCheckoutDate,
       adults,
       children,
-      numberOfDays,
-      phoneNumber,
-      accountNumber,
-      expiresAt,
-      createdAt: new Date().toISOString(),
+      number_of_days: numberOfDays,
+      phone_number: phoneNumber || null,
+      account_number: accountNumber || null,
+      expires_at: expiresAt,
     };
 
-    // TODO: Save payment to Sanity database
-    // const savedPayment = await sanityClient.create(paymentData);
+    // Save payment to Supabase
+    const savedPayment = await createPayment(paymentData);
 
-    // Generate payment instructions
-    const instructions = methodConfig.instructions.replace('{reference}', referenceNumber);
+    // Generate payment instructions in both languages
+    const instructions = formatPaymentInstructions(paymentMethod, referenceNumber, language);
+    const instructionsAr = language === 'en' ? formatPaymentInstructions(paymentMethod, referenceNumber, 'ar') : undefined;
 
     const response: SomaliPaymentResponse = {
       success: true,
       paymentId,
       amount: totalAmount,
+      baseAmount,
+      feeAmount,
       currency: 'USD',
       paymentMethod,
       instructions,
+      instructionsAr,
       referenceNumber,
       expiresAt,
+      provider: methodConfig.provider,
     };
 
     return NextResponse.json(response, {
@@ -225,22 +176,23 @@ export async function POST(req: Request) {
     });
 
   } catch (error: any) {
-    console.log('Somali payment failed:', error);
+    console.error('Somali payment failed:', error);
     return new NextResponse(error.message || 'Payment failed', { status: 500 });
   }
 }
 
 // Get available payment methods
 export async function GET() {
-  const methods = Object.entries(PAYMENT_METHODS).map(([key, config]) => ({
-    id: key,
-    name: config.name,
-    minAmount: config.minAmount,
-    maxAmount: config.maxAmount,
-    fee: config.fee,
-    type: ['evc', 'zaad', 'sahal', 'amtel', 'dahabshiil', 'taaj'].includes(key) ? 'mobile_money' : 
-          key === 'premier_bank' ? 'bank_transfer' : 'remittance',
-  }));
+  try {
+    const methods = getAvailablePaymentMethods();
 
-  return NextResponse.json({ methods });
-} 
+    return NextResponse.json({
+      methods,
+      success: true,
+      total: methods.length
+    });
+  } catch (error: any) {
+    console.error('Error fetching payment methods:', error);
+    return new NextResponse('Failed to fetch payment methods', { status: 500 });
+  }
+}

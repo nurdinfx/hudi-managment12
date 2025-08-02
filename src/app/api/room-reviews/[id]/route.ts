@@ -1,4 +1,4 @@
-import { getRoomReviews } from '@/libs/apis';
+import { getRoomReviews } from '@/libs/supabaseApis';
 import { NextResponse } from 'next/server';
 
 export async function GET(

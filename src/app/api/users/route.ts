@@ -7,7 +7,7 @@ import {
   createReview,
   getUserData,
   updateReview,
-} from '@/libs/apis';
+} from '@/libs/supabaseApis';
 
 export async function GET(req: Request, res: Response) {
   const session = await getServerSession(authOptions);
@@ -48,7 +48,7 @@ export async function POST(req: Request, res: Response) {
 
     if (alreadyExists) {
       data = await updateReview({
-        reviewId: alreadyExists._id,
+        reviewId: alreadyExists.id,
         reviewText,
         userRating: ratingValue,
       });
