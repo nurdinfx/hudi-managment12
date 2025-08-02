@@ -1,4 +1,4 @@
-import { authOptions } from '@/libs/auth';
+import { authOptionsSupabase } from '@/libs/authSupabase';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
@@ -187,7 +187,7 @@ export async function POST(req: Request) {
     }
 
     // Check authentication
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptionsSupabase);
     if (!session) {
       return new NextResponse('Authentication required', { status: 401 });
     }
