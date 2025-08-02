@@ -43,9 +43,9 @@ const Header = () => {
                 <div className="w-2 h-2 bg-green-500 rounded-full" title="Signed in"></div>
               </div>
             ) : (
-              <Link href='/auth' className="flex items-center space-x-2">
-                <FaUserCircle className='cursor-pointer text-2xl' />
-                <span className="hidden md:block text-sm">Sign In</span>
+              <Link href='/auth' className="flex items-center space-x-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors duration-300">
+                <FaUserCircle className='text-xl' />
+                <span className="text-sm font-medium">Sign In</span>
               </Link>
             )}
           </li>
