@@ -120,14 +120,14 @@ const RoomDetails = (props: { params: { slug: string } }) => {
               <div className='mb-11'>
                 <h2 className='font-bold text-3xl mb-2'>Offered Amenities</h2>
                 <div className='grid grid-cols-2'>
-                  {room.offeredAmenities.map(amenity => (
+                  {(room.amenities || room.offeredAmenities || []).map((amenity, index) => (
                     <div
-                      key={amenity._key}
+                      key={typeof amenity === 'string' ? amenity : amenity._key || index}
                       className='flex items-center md:my-0 my-1'
                     >
-                      <i className={`fa-solid ${amenity.icon}`}></i>
+                      <i className={`fa-solid ${typeof amenity === 'string' ? 'fa-check' : amenity.icon || 'fa-check'}`}></i>
                       <p className='text-xs md:text-base ml-2'>
-                        {amenity.amenity}
+                        {typeof amenity === 'string' ? amenity : amenity.amenity}
                       </p>
                     </div>
                   ))}
