@@ -209,7 +209,11 @@ const UserDetails = (props: { params: { id: string } }) => {
           {currentNav === 'bookings' ? (
             isLoadingBookings ? (
               <div className='text-center py-10'>
-                <LoadingSpinner />
+                <SoftLoader
+                  size="medium"
+                  color="primary"
+                  text="Loading your bookings"
+                />
               </div>
             ) : userBookings && userBookings.length > 0 ? (
               <Table
