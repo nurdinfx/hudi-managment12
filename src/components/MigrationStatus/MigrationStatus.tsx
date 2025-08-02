@@ -69,10 +69,11 @@ const MigrationStatus = () => {
       <div className="text-xs">
         {status?.success ? (
           <>
-            ✅ Supabase Migration Complete<br/>
+            ✅ Backend System Active<br/>
             🏠 Rooms: {status.roomsCount}<br/>
             💳 Payment Methods: {status.paymentMethodsCount}<br/>
             ⭐ Featured: {status.featuredRoom}
+            {status.note && <><br/>📝 {status.note}</>}
           </>
         ) : (
           <>
@@ -82,7 +83,7 @@ const MigrationStatus = () => {
         )}
       </div>
       <div className="text-xs mt-1 opacity-75">
-        {status?.timestamp}
+        {status?.timestamp && new Date(status.timestamp).toLocaleTimeString()}
       </div>
     </div>
   );
