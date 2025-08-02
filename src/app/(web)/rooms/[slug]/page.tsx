@@ -50,7 +50,14 @@ const RoomDetails = (props: { params: { slug: string } }) => {
   if (typeof room === 'undefined' && !isLoading)
     throw new Error('Cannot fetch data');
 
-  if (!room) return <LoadingSpinner />;
+  if (!room) return (
+    <SoftLoader
+      size="large"
+      color="primary"
+      text="Loading room details"
+      fullScreen={true}
+    />
+  );
 
   const calcMinCheckoutDate = () => {
     if (checkinDate) {
