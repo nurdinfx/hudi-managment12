@@ -1,20 +1,28 @@
 import { createClient } from '@supabase/supabase-js'
+import { mockSupabase, createMockServerSupabaseClient } from './supabaseMock'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
-// Only create client if environment variables are present
-export const supabase = supabaseUrl && supabaseAnonKey
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null
+// Use mock for development, real client for production
+const isUsingMock = !supabaseUrl || supabaseUrl.includes('demo-project') || process.env.NODE_ENV === 'development'
+
+export const supabase = isUsingMock
+  ? mockSupabase
+  : createClient(supabaseUrl, supabaseAnonKey)
 
 // Server-side client for API routes
 export const createServerSupabaseClient = () => {
+  if (isUsingMock) {
+    return createMockServerSupabaseClient()
+  }
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!url || !serviceKey) {
-    throw new Error('Supabase environment variables not configured')
+    console.warn('Supabase environment variables not configured, using mock client')
+    return createMockServerSupabaseClient()
   }
 
   return createClient(url, serviceKey)
