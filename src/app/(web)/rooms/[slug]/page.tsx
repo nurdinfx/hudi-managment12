@@ -115,7 +115,15 @@ const RoomDetails = (props: { params: { slug: string } }) => {
       }
     } catch (error: any) {
       console.log('Error: ', error);
-      toast.error(error?.response?.data || 'An error occurred');
+
+      if (error.response?.status === 401) {
+        toast.error('Please sign in to complete booking');
+        router.push('/auth');
+      } else if (error.response?.data) {
+        toast.error(error.response.data);
+      } else {
+        toast.error('An error occurred while processing your booking');
+      }
     } finally {
       setIsProcessingPayment(false);
     }
