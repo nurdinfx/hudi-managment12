@@ -6,15 +6,26 @@ const path = require('path');
 console.log('🚀 Starting Next.js development server...');
 
 const nextBin = path.join(__dirname, 'node_modules', '.bin', 'next');
+console.log(`📁 Using Next.js binary: ${nextBin}`);
+console.log(`⚙️  Environment: NODE_ENV=development, NODE_OPTIONS=--max-old-space-size=2048`);
 
 const child = spawn(nextBin, ['dev', '--port', '3000'], {
-  stdio: 'inherit',
+  stdio: ['inherit', 'pipe', 'pipe'],
   env: {
     ...process.env,
     NODE_ENV: 'development',
     NODE_OPTIONS: '--max-old-space-size=2048',
     NEXT_TELEMETRY_DISABLED: '1'
   }
+});
+
+// Pipe output with prefixes
+child.stdout.on('data', (data) => {
+  process.stdout.write(`[NEXT] ${data}`);
+});
+
+child.stderr.on('data', (data) => {
+  process.stderr.write(`[NEXT-ERR] ${data}`);
 });
 
 child.on('error', (error) => {
