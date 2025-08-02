@@ -53,12 +53,24 @@ const MigrationStatus = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  if (!shouldShow || !showWidget) {
+    return null;
+  }
+
   if (loading) {
     return (
       <div className="fixed bottom-4 right-4 bg-blue-500 text-white p-4 rounded-lg shadow-lg">
-        <div className="flex items-center">
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-          Checking system status...
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+            Checking system status...
+          </div>
+          <button
+            onClick={() => setShowWidget(false)}
+            className="ml-2 text-white hover:text-gray-200 text-lg"
+          >
+            ×
+          </button>
         </div>
       </div>
     );
