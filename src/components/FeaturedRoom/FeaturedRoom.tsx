@@ -40,7 +40,7 @@ const FeaturedRoom: FC<Props> = props => {
       <div className='md:grid gap-8 grid-cols-1'>
         <div className='rounded-2xl overflow-hidden h-48 mb-4 md:mb-0'>
           <Image
-            src={featuredRoom.coverImage?.url || '/images/hero-1.jpeg'}
+            src={featuredRoom.cover_image || '/images/hero-1.jpeg'}
             alt={featuredRoom.name || 'Featured Room'}
             width={300}
             height={300}
@@ -50,10 +50,10 @@ const FeaturedRoom: FC<Props> = props => {
         </div>
         <div className='grid grid-cols-2 gap-8 h-48'>
           {additionalImages.map((image, index) => (
-            <div key={image._key || index} className='rounded-2xl overflow-hidden'>
+            <div key={index} className='rounded-2xl overflow-hidden'>
               <Image
-                src={image.url || '/images/hero-1.jpeg'}
-                alt={image._key || `Room image ${index + 1}`}
+                src={typeof image === 'string' ? image : '/images/hero-1.jpeg'}
+                alt={`Room image ${index + 1}`}
                 width={300}
                 height={300}
                 className='img scale-animation'
