@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
-import { authOptions } from '@/libs/auth';
+import { authOptionsSupabase } from '@/libs/authSupabase';
 import {
   checkReviewExists,
   createReview,
