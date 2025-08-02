@@ -236,7 +236,7 @@ export async function POST(req: Request) {
       payment_id: paymentId,
       reference_number: referenceNumber,
       user_id: userId,
-      room_id: room.id,
+      room_id: room.id || room._id, // Support both Supabase (id) and Sanity (_id)
       amount: totalAmount,
       base_amount: baseAmount,
       fee_amount: feeAmount,
