@@ -59,67 +59,123 @@ const Auth = () => {
   };
 
   return (
-    <section className='container mx-auto'>
-      <div className='p-6 space-y-4 md:space-y-6 sm:p-8 w-80 md:w-[70%] mx-auto'>
-        <div className='flex mb-8 flex-col md:flex-row items-center justify-between'>
-          <h1 className='text-xl font-bold leading-tight tracking-tight md:text-2xl'>
-            Create an account
+    <section className='container mx-auto py-12'>
+      <div className='max-w-md mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8'>
+        <div className='text-center mb-8'>
+          <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-2'>
+            Welcome to Hotelzz
           </h1>
-          <p>OR</p>
-          <span className='inline-flex items-center'>
-            <AiFillGithub
-              onClick={loginHandler}
-              className='mr-3 text-4xl cursor-pointer text-black dark:text-white'
-            />{' '}
-            |
-            <FcGoogle
-              onClick={loginHandler}
-              className='ml-3 text-4xl cursor-pointer'
-            />
-          </span>
+          <p className='text-gray-600 dark:text-gray-300'>
+            Sign in or create an account to start booking
+          </p>
         </div>
 
-        <form className='space-y-4 md:space-y-6' onSubmit={handleSubmit}>
-          <input
-            type='email'
-            name='email'
-            placeholder='name@company.com'
-            required
-            className={inputStyles}
-            value={formData.email}
-            onChange={handleInputChange}
-          />
-          <input
-            type='text'
-            name='name'
-            placeholder='John Doe'
-            required
-            className={inputStyles}
-            value={formData.name}
-            onChange={handleInputChange}
-          />
-          <input
-            type='password'
-            name='password'
-            placeholder='password'
-            required
-            minLength={6}
-            className={inputStyles}
-            value={formData.password}
-            onChange={handleInputChange}
-          />
+        {/* Social Login Buttons */}
+        <div className='space-y-3 mb-6'>
+          <button
+            onClick={loginHandler}
+            className='w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300'
+          >
+            <FcGoogle className='text-2xl mr-3' />
+            <span className='font-medium'>Continue with Google</span>
+          </button>
+          <button
+            onClick={loginHandler}
+            className='w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300'
+          >
+            <AiFillGithub className='text-2xl mr-3 text-gray-700' />
+            <span className='font-medium'>Continue with GitHub</span>
+          </button>
+        </div>
+
+        <div className='relative mb-6'>
+          <div className='absolute inset-0 flex items-center'>
+            <div className='w-full border-t border-gray-300'></div>
+          </div>
+          <div className='relative flex justify-center text-sm'>
+            <span className='px-2 bg-white dark:bg-gray-800 text-gray-500'>Or continue with email</span>
+          </div>
+        </div>
+
+        {/* Email Form */}
+        <form className='space-y-4' onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor='email' className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+              Email Address
+            </label>
+            <input
+              type='email'
+              name='email'
+              id='email'
+              placeholder='Enter your email'
+              required
+              className={`${inputStyles} dark:bg-gray-700 dark:text-white dark:border-gray-600`}
+              value={formData.email}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div>
+            <label htmlFor='name' className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+              Full Name
+            </label>
+            <input
+              type='text'
+              name='name'
+              id='name'
+              placeholder='Enter your full name'
+              required
+              className={`${inputStyles} dark:bg-gray-700 dark:text-white dark:border-gray-600`}
+              value={formData.name}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div>
+            <label htmlFor='password' className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+              Password
+            </label>
+            <input
+              type='password'
+              name='password'
+              id='password'
+              placeholder='Create a password (min 6 characters)'
+              required
+              minLength={6}
+              className={`${inputStyles} dark:bg-gray-700 dark:text-white dark:border-gray-600`}
+              value={formData.password}
+              onChange={handleInputChange}
+            />
+          </div>
 
           <button
             type='submit'
-            className='w-full bg-tertiary-dark focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center'
+            className='w-full bg-primary text-white py-3 px-4 rounded-lg font-semibold hover:bg-primary/90 transition-colors duration-300'
           >
-            Sign Up
+            Create Account
           </button>
         </form>
 
-        <button onClick={loginHandler} className='text-blue-700 underline'>
-          login
-        </button>
+        <div className='mt-6 text-center'>
+          <p className='text-sm text-gray-600 dark:text-gray-400'>
+            Already have an account?{' '}
+            <button
+              onClick={loginHandler}
+              className='text-primary font-semibold hover:underline'
+            >
+              Sign In
+            </button>
+          </p>
+        </div>
+
+        <div className='mt-8 text-center'>
+          <Link
+            href='/'
+            className='text-sm text-gray-500 hover:text-gray-700 underline'
+          >
+            ← Back to Home
+          </Link>
+        </div>
       </div>
     </section>
   );
