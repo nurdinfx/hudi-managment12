@@ -8,6 +8,8 @@ import { getRooms } from '@/libs/supabaseApis';
 import { Room } from '@/models/supabaseTypes';
 import Search from '@/components/Search/Search';
 import RoomCard from '@/components/RoomCard/RoomCard';
+import SkeletonLoader from '@/components/SkeletonLoader/SkeletonLoader';
+import SoftLoader from '@/components/SoftLoader/SoftLoader';
 
 const Rooms = () => {
   const [roomTypeFilter, setRoomTypeFilter] = useState('');
