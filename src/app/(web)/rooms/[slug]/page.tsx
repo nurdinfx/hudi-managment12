@@ -24,6 +24,9 @@ const RoomDetails = (props: { params: { slug: string } }) => {
     params: { slug },
   } = props;
 
+  const { data: session } = useSession();
+  const router = useRouter();
+
   const [checkinDate, setCheckinDate] = useState<Date | null>(null);
   const [checkoutDate, setCheckoutDate] = useState<Date | null>(null);
   const [adults, setAdults] = useState(1);
