@@ -56,7 +56,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
       return toast.error('Please choose a valid checkin period');
 
     const numberOfDays = calcNumDays();
-    const hotelRoomSlug = room.slug.current;
+    const hotelRoomSlug = room.slug || slug;
 
     try {
       const { data } = await axios.post('/api/somali-payment', {
