@@ -259,7 +259,7 @@ export async function POST(req: Request) {
     const instructions = formatPaymentInstructions(paymentMethod, referenceNumber, language);
     const instructionsAr = language === 'en' ? formatPaymentInstructions(paymentMethod, referenceNumber, 'ar') : undefined;
 
-    const response: SomaliPaymentResponse = {
+    const response: SomaliPaymentResponse & { reference: string } = {
       success: true,
       paymentId,
       amount: totalAmount,
@@ -270,6 +270,7 @@ export async function POST(req: Request) {
       instructions,
       instructionsAr,
       referenceNumber,
+      reference: referenceNumber, // Add this for modal compatibility
       expiresAt,
       provider: methodConfig.provider,
     };
