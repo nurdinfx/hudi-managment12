@@ -60,6 +60,12 @@ const RoomCard: FC<Props> = props => {
           </Link>
         </div>
       </div>
+
+      <QuickBookModal
+        isOpen={isQuickBookOpen}
+        onClose={() => setIsQuickBookOpen(false)}
+        room={room}
+      />
     </div>
   );
 };
