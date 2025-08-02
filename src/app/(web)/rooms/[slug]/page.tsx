@@ -214,47 +214,6 @@ const RoomDetails = (props: { params: { slug: string } }) => {
               isBooked={room.is_booked || room.isBooked}
               handleBookNowClick={handleBookNowClick}
             />
-            <div className='mt-4'>
-              <label className='block text-sm font-medium mb-2'>Payment Method:</label>
-              <select
-                value={paymentMethod}
-                onChange={e => setPaymentMethod(e.target.value)}
-                className='w-full p-2 border rounded-md mb-2'
-              >
-                <option value='evc'>EVC Plus (Hormuud)</option>
-                <option value='zaad'>Zaad Service (Telesom)</option>
-                <option value='edahab'>eDahab (Mobile App)</option>
-                <option value='sahal'>Sahal (Golis)</option>
-                <option value='premier_bank'>Premier Bank</option>
-                <option value='dahabshiil'>Dahabshiil</option>
-                <option value='world_remit'>WorldRemit</option>
-              </select>
-              {['evc', 'zaad', 'sahal', 'edahab', 'amtel', 'dahabshiil', 'taaj'].includes(paymentMethod) && (
-                <input
-                  type='text'
-                  placeholder='Phone Number (+252611234567)'
-                  value={phoneNumber}
-                  onChange={e => setPhoneNumber(e.target.value)}
-                  className='w-full p-2 border rounded-md'
-                />
-              )}
-              {paymentMethod === 'premier_bank' && (
-                <input
-                  type='text'
-                  placeholder='Account Number'
-                  value={accountNumber}
-                  onChange={e => setAccountNumber(e.target.value)}
-                  className='w-full p-2 border rounded-md'
-                />
-              )}
-            </div>
-            <button onClick={handleBookNowClick} className='btn btn-primary mt-4'>Book Now</button>
-            {paymentInstructions && (
-              <div className='mt-6 p-4 border rounded bg-yellow-50'>
-                <h3 className='font-bold mb-2'>Payment Instructions</h3>
-                <pre>{paymentInstructions}</pre>
-              </div>
-            )}
           </div>
         </div>
       </div>
