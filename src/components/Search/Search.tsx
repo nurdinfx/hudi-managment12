@@ -27,7 +27,22 @@ const Search: FC<Props> = ({
   };
 
   const handleFilterClick = () => {
-    router.push(`/rooms?roomType=${roomTypeFilter}&searchQuery=${searchQuery}`);
+    console.log('Search clicked:', { roomTypeFilter, searchQuery });
+
+    // Build query parameters
+    const params = new URLSearchParams();
+    if (roomTypeFilter && roomTypeFilter !== 'All') {
+      params.set('roomType', roomTypeFilter);
+    }
+    if (searchQuery.trim()) {
+      params.set('searchQuery', searchQuery.trim());
+    }
+
+    const queryString = params.toString();
+    const url = queryString ? `/rooms?${queryString}` : '/rooms';
+
+    console.log('Navigating to:', url);
+    router.push(url);
   };
 
   return (
