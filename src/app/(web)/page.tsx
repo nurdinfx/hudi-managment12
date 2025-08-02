@@ -46,6 +46,7 @@ const Home = async () => {
     <>
       <HeroSection />
       <PageSearch />
+      <AuthPrompt />
       <FeaturedRoom featuredRoom={featuredRoom} />
       <Gallery />
       <NewsLetter />
