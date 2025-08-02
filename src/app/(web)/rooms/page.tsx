@@ -69,7 +69,7 @@ const Rooms = () => {
 
       <div className='flex mt-20 justify-between flex-wrap'>
         {filteredRooms.map(room => (
-          <RoomCard key={room._id} room={room} />
+          <RoomCard key={room.id || room._id} room={room} />
         ))}
       </div>
     </div>
