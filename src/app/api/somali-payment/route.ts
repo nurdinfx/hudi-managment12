@@ -51,6 +51,7 @@ export async function POST(req: Request) {
       paymentMethod,
       phoneNumber,
       accountNumber,
+      language = 'en',
     }: SomaliPaymentRequest = await req.json();
 
     // Validate required fields
@@ -70,9 +71,10 @@ export async function POST(req: Request) {
       return new NextResponse('Invalid payment method', { status: 400 });
     }
 
-    // Validate phone number for mobile money payments
-    if (['evc', 'zaad', 'sahal', 'amtel', 'dahabshiil', 'taaj'].includes(paymentMethod) && !phoneNumber) {
-      return new NextResponse('Phone number required for mobile money payments', { status: 400 });
+    // Validate phone number for mobile money and app payments
+    const mobileMethods = ['evc', 'zaad', 'sahal', 'edahab'];
+    if (mobileMethods.includes(paymentMethod) && !phoneNumber) {
+      return new NextResponse('Phone number required for mobile payments', { status: 400 });
     }
 
     // Validate account number for bank transfers
@@ -92,73 +94,80 @@ export async function POST(req: Request) {
 
     // Get room details
     const room = await getRoom(hotelRoomSlug);
-    
+
     if (!room) {
       return new NextResponse('Room not found', { status: 404 });
     }
-    
+
     const discountPrice = room.price - (room.price / 100) * room.discount;
     const baseAmount = discountPrice * numberOfDays;
-    
+
     // Calculate fees
-    const feeAmount = (baseAmount * PAYMENT_METHODS[paymentMethod].fee) / 100;
+    const methodConfig = PAYMENT_METHODS[paymentMethod];
+    const feeAmount = (baseAmount * methodConfig.fee) / 100;
     const totalAmount = baseAmount + feeAmount;
 
     // Validate amount limits
-    const methodConfig = PAYMENT_METHODS[paymentMethod];
     if (totalAmount < methodConfig.minAmount) {
-      return new NextResponse(`Minimum amount for ${methodConfig.name} is $${methodConfig.minAmount}`, { status: 400 });
+      return new NextResponse(
+        `Minimum amount for ${methodConfig.name} is $${methodConfig.minAmount}`,
+        { status: 400 }
+      );
     }
     if (totalAmount > methodConfig.maxAmount) {
-      return new NextResponse(`Maximum amount for ${methodConfig.name} is $${methodConfig.maxAmount}`, { status: 400 });
+      return new NextResponse(
+        `Maximum amount for ${methodConfig.name} is $${methodConfig.maxAmount}`,
+        { status: 400 }
+      );
     }
 
     // Generate unique payment ID and reference
-    const paymentId = `SOM-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const referenceNumber = `REF-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
-    
+    const { paymentId, referenceNumber } = generatePaymentReference();
+
     // Set expiration time (24 hours from now)
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
-    // Create payment record in Sanity (you'll need to create a payment schema)
+    // Create payment record in Supabase
     const paymentData = {
-      _type: 'payment',
-      paymentId,
-      referenceNumber,
-      userId,
-      roomId: room._id,
+      payment_id: paymentId,
+      reference_number: referenceNumber,
+      user_id: userId,
+      room_id: room.id,
       amount: totalAmount,
-      baseAmount,
-      feeAmount,
+      base_amount: baseAmount,
+      fee_amount: feeAmount,
       currency: 'USD',
-      paymentMethod,
-      status: 'pending',
-      checkinDate: formattedCheckinDate,
-      checkoutDate: formattedCheckoutDate,
+      payment_method: paymentMethod,
+      checkin_date: formattedCheckinDate,
+      checkout_date: formattedCheckoutDate,
       adults,
       children,
-      numberOfDays,
-      phoneNumber,
-      accountNumber,
-      expiresAt,
-      createdAt: new Date().toISOString(),
+      number_of_days: numberOfDays,
+      phone_number: phoneNumber || null,
+      account_number: accountNumber || null,
+      expires_at: expiresAt,
     };
 
-    // TODO: Save payment to Sanity database
-    // const savedPayment = await sanityClient.create(paymentData);
+    // Save payment to Supabase
+    const savedPayment = await createPayment(paymentData);
 
-    // Generate payment instructions
-    const instructions = methodConfig.instructions.replace('{reference}', referenceNumber);
+    // Generate payment instructions in both languages
+    const instructions = formatPaymentInstructions(paymentMethod, referenceNumber, language);
+    const instructionsAr = language === 'en' ? formatPaymentInstructions(paymentMethod, referenceNumber, 'ar') : undefined;
 
     const response: SomaliPaymentResponse = {
       success: true,
       paymentId,
       amount: totalAmount,
+      baseAmount,
+      feeAmount,
       currency: 'USD',
       paymentMethod,
       instructions,
+      instructionsAr,
       referenceNumber,
       expiresAt,
+      provider: methodConfig.provider,
     };
 
     return NextResponse.json(response, {
@@ -167,7 +176,7 @@ export async function POST(req: Request) {
     });
 
   } catch (error: any) {
-    console.log('Somali payment failed:', error);
+    console.error('Somali payment failed:', error);
     return new NextResponse(error.message || 'Payment failed', { status: 500 });
   }
 }
