@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
   images: {
     remotePatterns: [
       {
@@ -49,13 +46,6 @@ const nextConfig = {
     };
 
     return config;
-  },
-  // Suppress Supabase warnings in development
-  typescript: {
-    ignoreBuildErrors: false,
-  },
-  eslint: {
-    ignoreDuringBuilds: false,
   },
   // Optimize for better performance
   swcMinify: true,
