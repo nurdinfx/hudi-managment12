@@ -94,9 +94,18 @@ const Rooms = () => {
         </div>
       ) : filteredRooms.length === 0 ? (
         <div className="text-center mt-20">
-          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-            <p className="font-bold">No rooms found</p>
-            <p>Try adjusting your search criteria or browse all available rooms.</p>
+          <div className="bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-400 dark:border-yellow-600 text-yellow-700 dark:text-yellow-300 px-6 py-8 rounded-xl max-w-md mx-auto">
+            <h3 className="font-bold text-lg mb-2">No rooms found</h3>
+            <p className="mb-4">Try adjusting your search criteria or browse all available rooms.</p>
+            <button
+              onClick={() => {
+                setRoomTypeFilter('');
+                setSearchQuery('');
+              }}
+              className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
+            >
+              🔄 Clear Filters
+            </button>
           </div>
         </div>
       ) : (
