@@ -39,7 +39,7 @@ let mockData = {
       cover_image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
       images: [
         'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-        'https://images.unsplash.com/photo-1520637836862-4d197d17c50a?w=800',
+        'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800',
         'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800'
       ],
       amenities: ['WiFi', 'Ocean View', 'Air Conditioning', 'Mini Bar', 'Balcony', 'Room Service'],
