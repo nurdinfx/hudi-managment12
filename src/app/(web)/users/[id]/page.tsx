@@ -224,9 +224,9 @@ const UserDetails = (props: { params: { id: string } }) => {
             ) : (
               <div className='text-center py-10'>
                 <h3 className='text-xl font-semibold mb-2'>No Bookings Found</h3>
-                <p className='text-gray-600'>You haven&apos;t made any bookings yet.</p>
-                <Link href='/rooms' className='mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors'>
-                  Browse Rooms
+                <p className='text-gray-600 mb-4'>You haven&apos;t made any bookings yet.</p>
+                <Link href='/rooms' className='mt-4 inline-block bg-primary text-white px-8 py-4 rounded-lg font-semibold hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02] transition-all duration-300'>
+                  🏠 Browse Rooms Now
                 </Link>
               </div>
             )
