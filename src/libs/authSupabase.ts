@@ -136,7 +136,7 @@ export const authOptionsSupabase: NextAuthOptions = {
   session: {
     strategy: 'jwt',
   },
-  debug: process.env.NODE_ENV === 'development',
+  debug: false, // Disabled to prevent fetch errors and warnings
   secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-for-development',
   callbacks: {
     async signIn({ user, account, profile }) {
