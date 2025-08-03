@@ -8,6 +8,7 @@ import ThemeProvider from '@/components/ThemeProvider/ThemeProvider';
 import { NextAuthProvider } from '@/components/AuthProvider/AuthProvider';
 import Toast from '@/components/Toast/Toast';
 import MetaMaskHandler from '@/components/MetaMaskHandler/MetaMaskHandler';
+import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
 
 // Import MetaMask error suppression
 import '@/libs/metamask';
