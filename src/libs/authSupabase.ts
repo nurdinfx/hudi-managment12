@@ -2,16 +2,13 @@ import { NextAuthOptions } from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
 
-import { createOrUpdateUser } from './supabaseApis';
+import { createOrUpdateUser, getUserByEmail, createUserWithPassword } from './supabaseApis';
 
 // Helper function to get available providers
 const getProviders = () => {
   const providers = [];
-
-  // Check if we're using demo credentials
-  const isDemo = process.env.GOOGLE_CLIENT_ID?.startsWith('demo-') || 
-                 process.env.GITHUB_CLIENT_ID?.startsWith('demo-');
 
   // Add GitHub provider if credentials are available
   if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
@@ -33,7 +30,83 @@ const getProviders = () => {
     );
   }
 
-  // Add demo credentials provider if using demo mode
+  // Add credentials provider for email/password auth
+  providers.push(
+    CredentialsProvider({
+      id: 'credentials',
+      name: 'Email and Password',
+      credentials: {
+        email: { label: 'Email', type: 'email', placeholder: 'Enter your email' },
+        password: { label: 'Password', type: 'password', placeholder: 'Enter your password' },
+        name: { label: 'Name', type: 'text', placeholder: 'Enter your full name' },
+        isSignUp: { label: 'Sign Up', type: 'text' }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Please provide both email and password');
+        }
+
+        try {
+          // Check if this is a signup request
+          if (credentials.isSignUp === 'true') {
+            if (!credentials.name) {
+              throw new Error('Name is required for signup');
+            }
+
+            // Check if user already exists
+            const existingUser = await getUserByEmail(credentials.email);
+            if (existingUser) {
+              throw new Error('User with this email already exists');
+            }
+
+            // Hash password
+            const hashedPassword = await bcrypt.hash(credentials.password, 12);
+
+            // Create new user
+            const newUser = await createUserWithPassword({
+              email: credentials.email,
+              name: credentials.name,
+              password: hashedPassword,
+            });
+
+            return {
+              id: newUser.id,
+              email: newUser.email,
+              name: newUser.name,
+              image: newUser.image || null,
+            };
+          } else {
+            // Login flow
+            const user = await getUserByEmail(credentials.email);
+            if (!user || !user.password) {
+              throw new Error('Invalid email or password');
+            }
+
+            // Verify password
+            const isValidPassword = await bcrypt.compare(credentials.password, user.password);
+            if (!isValidPassword) {
+              throw new Error('Invalid email or password');
+            }
+
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              image: user.image || null,
+            };
+          }
+        } catch (error: any) {
+          console.error('Auth error:', error);
+          throw new Error(error.message || 'Authentication failed');
+        }
+      },
+    })
+  );
+
+  // Add demo provider if using demo credentials
+  const isDemo = process.env.GOOGLE_CLIENT_ID?.startsWith('demo-') || 
+                 process.env.GITHUB_CLIENT_ID?.startsWith('demo-');
+
   if (isDemo) {
     providers.push(
       CredentialsProvider({
