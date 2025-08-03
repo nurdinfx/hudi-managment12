@@ -250,7 +250,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
-        totalAmount={calcNumDays() > 0 ? calcNumDays() * (room.price - (room.price / 100) * room.discount) : 0}
+        totalAmount={calcNumDays() > 0 ? calcNumDays() * ((room?.price || 0) - ((room?.price || 0) / 100) * (room?.discount || 0)) : 0}
         onPaymentMethodSelect={handlePaymentMethodSelect}
         isProcessing={isProcessingPayment}
       />
