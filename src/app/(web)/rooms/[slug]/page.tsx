@@ -175,7 +175,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
               <div className='mb-11'>
                 <h2 className='font-bold text-3xl mb-2'>Offered Amenities</h2>
                 <div className='grid grid-cols-2'>
-                  {(room.amenities || room.offeredAmenities || []).map((amenity, index) => (
+                  {(room.amenities || room.offeredAmenities || []).map((amenity: any, index: number) => (
                     <div
                       key={typeof amenity === 'string' ? amenity : amenity._key || index}
                       className='flex items-center md:my-0 my-1'
