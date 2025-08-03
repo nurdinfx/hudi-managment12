@@ -246,7 +246,10 @@ const UserDetails = (props: { params: { id: string } }) => {
             ) : (
               <div className='text-center py-10'>
                 <h3 className='text-xl font-semibold mb-2'>No Spending Data</h3>
-                <p className='text-gray-600'>Complete your first booking to see spending analytics.</p>
+                <p className='text-gray-600 mb-4'>Complete your first booking to see spending analytics.</p>
+                <Link href='/rooms' className='mt-4 inline-block bg-primary text-white px-8 py-4 rounded-lg font-semibold hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02] transition-all duration-300'>
+                  🏠 Browse Rooms Now
+                </Link>
               </div>
             )
           ) : null}
