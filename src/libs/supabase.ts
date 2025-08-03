@@ -36,7 +36,18 @@ export const createServerSupabaseClient = () => {
     return createMockServerSupabaseClient()
   }
 
-  return createClient(url, serviceKey)
+  return createClient(url, serviceKey, {
+    realtime: {
+      params: {
+        eventsPerSecond: 10
+      }
+    },
+    global: {
+      headers: {
+        'X-Client-Info': 'hotelzz-server'
+      }
+    }
+  })
 }
 
 // Database types for TypeScript
