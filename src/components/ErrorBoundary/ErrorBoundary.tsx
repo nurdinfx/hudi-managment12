@@ -78,7 +78,7 @@ class ErrorBoundary extends Component<Props, State> {
               </h3>
               
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
-                We encountered an unexpected error. Don't worry, we're on it!
+                We encountered an unexpected error. Don&apos;t worry, we&apos;re on it!
               </p>
               
               <div className="space-y-3">
