@@ -9,7 +9,18 @@ const isUsingMock = !supabaseUrl || supabaseUrl.includes('demo-project') || proc
 
 export const supabase = isUsingMock
   ? mockSupabase
-  : createClient(supabaseUrl, supabaseAnonKey)
+  : createClient(supabaseUrl, supabaseAnonKey, {
+      realtime: {
+        params: {
+          eventsPerSecond: 10
+        }
+      },
+      global: {
+        headers: {
+          'X-Client-Info': 'hotelzz-app'
+        }
+      }
+    })
 
 // Server-side client for API routes
 export const createServerSupabaseClient = () => {
