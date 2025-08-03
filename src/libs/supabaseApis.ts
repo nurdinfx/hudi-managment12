@@ -176,6 +176,52 @@ export async function createOrUpdateUser(userData: {
   }
 }
 
+// Get user by email for authentication
+export async function getUserByEmail(email: string) {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single()
+
+    if (error && error.code !== 'PGRST116') throw error // PGRST116 is "not found"
+    return data
+  } catch (error) {
+    console.error('Error fetching user by email:', error)
+    return null
+  }
+}
+
+// Create user with password for credentials auth
+export async function createUserWithPassword(userData: {
+  email: string
+  name: string
+  password: string
+}) {
+  try {
+    const userId = crypto.randomUUID()
+    const { data, error } = await supabase
+      .from('users')
+      .insert({
+        id: userId,
+        email: userData.email,
+        name: userData.name,
+        password: userData.password,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Error creating user with password:', error)
+    throw error
+  }
+}
+
 // Review operations
 export async function checkReviewExists(
   userId: string,
