@@ -433,7 +433,7 @@ const PaymentModal = ({ isOpen, onClose, totalAmount, onPaymentMethodSelect, isP
                   What happens next?
                 </h4>
                 <p className="text-sm text-blue-800 dark:text-blue-200">
-                  You'll receive detailed payment instructions and a reference number. Complete the payment using your {selectedMethodData.name} account within 24 hours.
+                  You&apos;ll receive detailed payment instructions and a reference number. Complete the payment using your {selectedMethodData.name} account within 24 hours.
                 </p>
               </div>
 
