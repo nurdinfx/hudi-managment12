@@ -3,7 +3,8 @@
 import { FC, useState } from 'react';
 import Image from 'next/image';
 
-import { Image as ImageType } from '@/models/room';
+// Support both string arrays and object arrays for images
+type ImageType = string | { url: string; _key?: string };
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { MdCancel } from 'react-icons/md';
 
@@ -41,7 +42,7 @@ const HotelPhotoGallery: FC<{ photos: ImageType[] }> = ({ photos }) => {
         <div className='h-[540px] relative rounded-2xl overflow-hidden'>
           <div className='hidden md:flex justify-center items-center w-full h-full'>
             <Image
-              src={photos[0].url}
+              src={typeof photos[0] === 'string' ? photos[0] : photos[0]?.url || '/images/hero-1.jpeg'}
               alt={`Room Photo ${currenPhotoIndex + 1}`}
               className='img scale-animation cursor-pointer'
               width={150}
@@ -51,7 +52,7 @@ const HotelPhotoGallery: FC<{ photos: ImageType[] }> = ({ photos }) => {
           </div>
           <div className='md:hidden flex justify-center items-center w-full h-full'>
             <Image
-              src={photos[currenPhotoIndex].url}
+              src={typeof photos[currenPhotoIndex] === 'string' ? photos[currenPhotoIndex] : photos[currenPhotoIndex]?.url || '/images/hero-1.jpeg'}
               alt={`Room Photo ${currenPhotoIndex + 1}`}
               className='img'
               width={150}
@@ -79,7 +80,7 @@ const HotelPhotoGallery: FC<{ photos: ImageType[] }> = ({ photos }) => {
               <Image
                 width={150}
                 height={150}
-                src={photo.url}
+                src={typeof photo === 'string' ? photo : photo?.url || '/images/hero-1.jpeg'}
                 alt={`Room Photo ${index + 2}`}
                 className='img scale-animation'
               />
@@ -93,7 +94,7 @@ const HotelPhotoGallery: FC<{ photos: ImageType[] }> = ({ photos }) => {
               <Image
                 width={150}
                 height={150}
-                src={photos[maximumVisiblePhotos - 1].url}
+                src={typeof photos[maximumVisiblePhotos - 1] === 'string' ? photos[maximumVisiblePhotos - 1] : photos[maximumVisiblePhotos - 1]?.url || '/images/hero-1.jpeg'}
                 alt={`Room Photo ${maximumVisiblePhotos}`}
                 className='img'
               />
@@ -108,7 +109,7 @@ const HotelPhotoGallery: FC<{ photos: ImageType[] }> = ({ photos }) => {
           <div className='fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-90 z-[55]'>
             <div className='h-[75vh] w-[320px] md:w-[700px] relative'>
               <Image
-                src={photos[currenPhotoIndex].url}
+                src={typeof photos[currenPhotoIndex] === 'string' ? photos[currenPhotoIndex] : photos[currenPhotoIndex]?.url || '/images/hero-1.jpeg'}
                 alt={`Room Photo ${currenPhotoIndex + 1}`}
                 width={150}
                 height={150}

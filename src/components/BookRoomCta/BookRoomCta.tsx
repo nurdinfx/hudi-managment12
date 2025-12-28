@@ -153,9 +153,23 @@ const BookRoomCta: FC<Props> = props => {
       <button
         disabled={isBooked}
         onClick={handleBookNowClick}
-        className='btn-primary w-full mt-6 disabled:bg-gray-500 disabled:cursor-not-allowed'
+        className={`w-full mt-6 py-4 px-6 rounded-lg font-semibold text-lg transition-all duration-300 ${
+          isBooked
+            ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+            : 'bg-primary text-white hover:bg-primary/90 hover:shadow-lg hover:-translate-y-1 transform'
+        }`}
       >
-        {isBooked ? 'Booked' : 'Book Now'}
+        {isBooked ? (
+          <span className="flex items-center justify-center space-x-2">
+            <span>🔒</span>
+            <span>Room Booked</span>
+          </span>
+        ) : (
+          <span className="flex items-center justify-center space-x-2">
+            <span>💳</span>
+            <span>Book Now - Choose Payment</span>
+          </span>
+        )}
       </button>
     </div>
   );

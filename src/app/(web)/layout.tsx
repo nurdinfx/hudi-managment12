@@ -8,6 +8,7 @@ import ThemeProvider from '@/components/ThemeProvider/ThemeProvider';
 import { NextAuthProvider } from '@/components/AuthProvider/AuthProvider';
 import Toast from '@/components/Toast/Toast';
 import MetaMaskHandler from '@/components/MetaMaskHandler/MetaMaskHandler';
+import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
 
 // Import MetaMask error suppression
 import '@/libs/metamask';
@@ -32,17 +33,19 @@ export default function RootLayout({
         />
       </head>
       <body className='font-normal'>
-        <NextAuthProvider>
-          <ThemeProvider>
-            <MetaMaskHandler />
-            <Toast />
-            <main className='font-normal'>
-              <Header />
-              {children}
-              <Footer />
-            </main>
-          </ThemeProvider>
-        </NextAuthProvider>
+        <ErrorBoundary>
+          <NextAuthProvider>
+            <ThemeProvider>
+              <MetaMaskHandler />
+              <Toast />
+              <main className='font-normal'>
+                <Header />
+                {children}
+                <Footer />
+              </main>
+            </ThemeProvider>
+          </NextAuthProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

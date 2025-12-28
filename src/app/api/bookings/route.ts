@@ -1,11 +1,11 @@
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
-import { authOptions } from '@/libs/auth';
-import { createBooking, updateHotelRoom } from '@/libs/apis';
+import { authOptionsSupabase } from '@/libs/authSupabase';
+import { createBooking, updateHotelRoom } from '@/libs/supabaseApis';
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptionsSupabase);
 
   if (!session) {
     return new NextResponse('Authentication Required', { status: 401 });
@@ -50,4 +50,4 @@ export async function POST(req: Request) {
     console.log('Error creating booking:', error);
     return new NextResponse(error.message || 'Unable to create booking', { status: 500 });
   }
-} 
+}

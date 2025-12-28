@@ -1,11 +1,11 @@
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
-import { authOptions } from '@/libs/auth';
-import { getUserBookings } from '@/libs/apis';
+import { authOptionsSupabase } from '@/libs/authSupabase';
+import { getUserBookings } from '@/libs/supabaseApis';
 
 export async function GET(req: Request, res: Response) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptionsSupabase);
 
   if (!session) {
     return new NextResponse('Authentication Required', { status: 401 });
@@ -20,4 +20,4 @@ export async function GET(req: Request, res: Response) {
     console.log('Error fetching user bookings:', error);
     return new NextResponse('Unable to fetch bookings', { status: 400 });
   }
-} 
+}

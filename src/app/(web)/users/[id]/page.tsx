@@ -7,10 +7,12 @@ import Link from 'next/link';
 import axios from 'axios';
 import { signOut } from 'next-auth/react';
 
-import { getUserBookings } from '@/libs/apis';
-import { User } from '@/models/user';
+import { getUserBookings } from '@/libs/supabaseApis';
+import { User } from '@/models/supabaseTypes';
 import LoadingSpinner from '../../loading';
 import { useState } from 'react';
+import SkeletonLoader from '@/components/SkeletonLoader/SkeletonLoader';
+import SoftLoader from '@/components/SoftLoader/SoftLoader';
 import { BsJournalBookmarkFill } from 'react-icons/bs';
 import { GiMoneyStack } from 'react-icons/gi';
 import Table from '@/components/Table/Table';
@@ -161,7 +163,7 @@ const UserDetails = (props: { params: { id: string } }) => {
           </p>
 
           <p className='text-xs py-2 font-medium'>
-            Joined In {userData._createdAt.split('T')[0]}
+            Joined In {(userData.created_at || userData._createdAt || new Date().toISOString()).split('T')[0]}
           </p>
           <div className='md:hidden flex items-center my-2'>
             <p className='mr-2'>Sign out</p>
@@ -207,7 +209,11 @@ const UserDetails = (props: { params: { id: string } }) => {
           {currentNav === 'bookings' ? (
             isLoadingBookings ? (
               <div className='text-center py-10'>
-                <LoadingSpinner />
+                <SoftLoader
+                  size="medium"
+                  color="primary"
+                  text="Loading your bookings"
+                />
               </div>
             ) : userBookings && userBookings.length > 0 ? (
               <Table
@@ -218,9 +224,9 @@ const UserDetails = (props: { params: { id: string } }) => {
             ) : (
               <div className='text-center py-10'>
                 <h3 className='text-xl font-semibold mb-2'>No Bookings Found</h3>
-                <p className='text-gray-600'>You haven&apos;t made any bookings yet.</p>
-                <Link href='/rooms' className='mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors'>
-                  Browse Rooms
+                <p className='text-gray-600 mb-4'>You haven&apos;t made any bookings yet.</p>
+                <Link href='/rooms' className='mt-4 inline-block bg-primary text-white px-8 py-4 rounded-lg font-semibold hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02] transition-all duration-300'>
+                  🏠 Browse Rooms Now
                 </Link>
               </div>
             )
@@ -229,14 +235,21 @@ const UserDetails = (props: { params: { id: string } }) => {
           {currentNav === 'amount' ? (
             isLoadingBookings ? (
               <div className='text-center py-10'>
-                <LoadingSpinner />
+                <SoftLoader
+                  size="medium"
+                  color="primary"
+                  text="Loading spending data"
+                />
               </div>
             ) : userBookings && userBookings.length > 0 ? (
               <Chart userBookings={userBookings} />
             ) : (
               <div className='text-center py-10'>
                 <h3 className='text-xl font-semibold mb-2'>No Spending Data</h3>
-                <p className='text-gray-600'>Complete your first booking to see spending analytics.</p>
+                <p className='text-gray-600 mb-4'>Complete your first booking to see spending analytics.</p>
+                <Link href='/rooms' className='mt-4 inline-block bg-primary text-white px-8 py-4 rounded-lg font-semibold hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02] transition-all duration-300'>
+                  🏠 Browse Rooms Now
+                </Link>
               </div>
             )
           ) : null}

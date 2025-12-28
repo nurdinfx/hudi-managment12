@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 export const heading1 = (
   <>
@@ -7,7 +8,9 @@ export const heading1 = (
       Experience an Exquisite Hotel Immersed in Rich History and Timeless
       Elegance.
     </p>
-    <button className='btn-primary'>Get Started</button>
+    <Link href='/auth' className='btn-primary inline-block'>
+      Get Started
+    </Link>
   </>
 );
 

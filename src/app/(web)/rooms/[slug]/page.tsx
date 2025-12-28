@@ -7,11 +7,16 @@ import { AiOutlineMedicineBox } from 'react-icons/ai';
 import { GiSmokeBomb } from 'react-icons/gi';
 import { useState } from 'react';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
-import { getRoom } from '@/libs/apis';
+import { getRoom } from '@/libs/supabaseApis';
 import LoadingSpinner from '../../loading';
+import SoftLoader from '@/components/SoftLoader/SoftLoader';
 import HotelPhotoGallery from '@/components/HotelPhotoGallery/HotelPhotoGallery';
 import BookRoomCta from '@/components/BookRoomCta/BookRoomCta';
+import PaymentModal from '@/components/PaymentModal/PaymentModal';
+import PaymentInstructions from '@/components/PaymentInstructions/PaymentInstructions';
 import toast from 'react-hot-toast';
 import RoomReview from '@/components/RoomReview/RoomReview';
 
@@ -20,14 +25,22 @@ const RoomDetails = (props: { params: { slug: string } }) => {
     params: { slug },
   } = props;
 
+  const { data: session } = useSession();
+  const router = useRouter();
+
   const [checkinDate, setCheckinDate] = useState<Date | null>(null);
   const [checkoutDate, setCheckoutDate] = useState<Date | null>(null);
   const [adults, setAdults] = useState(1);
   const [noOfChildren, setNoOfChildren] = useState(0);
-  const [paymentInstructions, setPaymentInstructions] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<string>('evc'); // Default to EVC, can be changed to a selector
-  const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [accountNumber, setAccountNumber] = useState<string>('');
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentData, setPaymentData] = useState<{
+    method: string;
+    reference: string;
+    amount: number;
+    expiresAt: string;
+  } | null>(null);
 
   const fetchRoom = async () => getRoom(slug);
 
@@ -37,7 +50,14 @@ const RoomDetails = (props: { params: { slug: string } }) => {
   if (typeof room === 'undefined' && !isLoading)
     throw new Error('Cannot fetch data');
 
-  if (!room) return <LoadingSpinner />;
+  if (!room) return (
+    <SoftLoader
+      size="large"
+      color="primary"
+      text="Loading room details"
+      fullScreen={true}
+    />
+  );
 
   const calcMinCheckoutDate = () => {
     if (checkinDate) {
@@ -49,16 +69,29 @@ const RoomDetails = (props: { params: { slug: string } }) => {
   };
 
   const handleBookNowClick = async () => {
+    // Check if user is authenticated
+    if (!session) {
+      toast.error('Please sign in to book a room');
+      router.push('/auth');
+      return;
+    }
+
     if (!checkinDate || !checkoutDate)
       return toast.error('Please provide checkin / checkout date');
 
     if (checkinDate > checkoutDate)
       return toast.error('Please choose a valid checkin period');
 
-    const numberOfDays = calcNumDays();
-    const hotelRoomSlug = room.slug.current;
+    setIsPaymentModalOpen(true);
+  };
+
+  const handlePaymentMethodSelect = async (method: string, phoneNumber?: string, accountNumber?: string) => {
+    setIsProcessingPayment(true);
 
     try {
+      const numberOfDays = calcNumDays();
+      const hotelRoomSlug = room.slug || slug;
+
       const { data } = await axios.post('/api/somali-payment', {
         checkinDate,
         checkoutDate,
@@ -66,19 +99,41 @@ const RoomDetails = (props: { params: { slug: string } }) => {
         children: noOfChildren,
         numberOfDays,
         hotelRoomSlug,
-        paymentMethod,
-        phoneNumber: ['evc', 'zaad', 'sahal', 'amtel', 'dahabshiil', 'taaj'].includes(paymentMethod) ? phoneNumber : undefined,
-        accountNumber: paymentMethod === 'premier_bank' ? accountNumber : undefined,
+        paymentMethod: method,
+        phoneNumber: ['evc', 'zaad', 'sahal', 'edahab'].includes(method) ? phoneNumber : undefined,
+        accountNumber: method === 'premier_bank' ? accountNumber : undefined,
       });
-      if (data && data.instructions) {
-        setPaymentInstructions(data.instructions);
+
+      if (data && data.reference) {
+        const discountPrice = room.price - (room.price / 100) * room.discount;
+        const totalAmount = (calcNumDays() || 1) * discountPrice;
+
+        setPaymentData({
+          method,
+          reference: data.reference,
+          amount: totalAmount,
+          expiresAt: data.expiresAt || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        });
+
+        setIsPaymentModalOpen(false);
+        setIsInstructionsOpen(true);
         toast.success('Payment instructions generated!');
       } else {
         toast.error('Failed to generate payment instructions');
       }
     } catch (error: any) {
       console.log('Error: ', error);
-      toast.error(error?.response?.data || 'An error occurred');
+
+      if (error.response?.status === 401) {
+        toast.error('Please sign in to complete booking');
+        router.push('/auth');
+      } else if (error.response?.data) {
+        toast.error(error.response.data);
+      } else {
+        toast.error('An error occurred while processing your booking');
+      }
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
@@ -100,15 +155,15 @@ const RoomDetails = (props: { params: { slug: string } }) => {
               <h2 className='font-bold text-left text-lg md:text-2xl'>
                 {room.name} ({room.dimension})
               </h2>
-              <div className='flex my-11'>
-                {room.offeredAmenities.map(amenity => (
+              <div className='flex my-11 overflow-x-auto'>
+                {(room.amenities || room.offeredAmenities || []).map((amenity: any, index: number) => (
                   <div
-                    key={amenity._key}
-                    className='md:w-44 w-fit text-center px-2 md:px-0 h-20 md:h-40 mr-3 bg-[#eff0f2] dark:bg-gray-800 rounded-lg grid place-content-center'
+                    key={typeof amenity === 'string' ? amenity : amenity._key || index}
+                    className='md:w-44 w-fit text-center px-2 md:px-0 h-20 md:h-40 mr-3 bg-[#eff0f2] dark:bg-gray-800 rounded-lg grid place-content-center flex-shrink-0'
                   >
-                    <i className={`fa-solid ${amenity.icon} md:text-2xl`}></i>
+                    <i className={`fa-solid ${typeof amenity === 'string' ? 'fa-check' : amenity.icon || 'fa-check'} md:text-2xl`}></i>
                     <p className='text-xs md:text-base pt-3'>
-                      {amenity.amenity}
+                      {typeof amenity === 'string' ? amenity : amenity.amenity}
                     </p>
                   </div>
                 ))}
@@ -120,14 +175,14 @@ const RoomDetails = (props: { params: { slug: string } }) => {
               <div className='mb-11'>
                 <h2 className='font-bold text-3xl mb-2'>Offered Amenities</h2>
                 <div className='grid grid-cols-2'>
-                  {room.offeredAmenities.map(amenity => (
+                  {(room.amenities || room.offeredAmenities || []).map((amenity: any, index: number) => (
                     <div
-                      key={amenity._key}
+                      key={typeof amenity === 'string' ? amenity : amenity._key || index}
                       className='flex items-center md:my-0 my-1'
                     >
-                      <i className={`fa-solid ${amenity.icon}`}></i>
+                      <i className={`fa-solid ${typeof amenity === 'string' ? 'fa-check' : amenity.icon || 'fa-check'}`}></i>
                       <p className='text-xs md:text-base ml-2'>
-                        {amenity.amenity}
+                        {typeof amenity === 'string' ? amenity : amenity.amenity}
                       </p>
                     </div>
                   ))}
@@ -164,7 +219,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
                   <p className='md:text-lg font-semibold'>Customer Reviews</p>
                 </div>
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <RoomReview roomId={room._id} />
+                  <RoomReview roomId={room.id || room._id} />
                 </div>
               </div>
             </div>
@@ -174,7 +229,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
             <BookRoomCta
               discount={room.discount}
               price={room.price}
-              specialNote={room.specialNote}
+              specialNote={room.special_note || room.specialNote}
               checkinDate={checkinDate}
               setCheckinDate={setCheckinDate}
               checkoutDate={checkoutDate}
@@ -184,47 +239,33 @@ const RoomDetails = (props: { params: { slug: string } }) => {
               noOfChildren={noOfChildren}
               setAdults={setAdults}
               setNoOfChildren={setNoOfChildren}
-              isBooked={room.isBooked}
+              isBooked={room.is_booked || room.isBooked}
               handleBookNowClick={handleBookNowClick}
             />
-            <div className='mt-4'>
-              <label>Payment Method:</label>
-              <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)}>
-                <option value='evc'>EVC Plus</option>
-                <option value='zaad'>Zaad</option>
-                <option value='premier_bank'>Premier Bank</option>
-                <option value='amtel'>Amtel</option>
-                {/* Add more as needed */}
-              </select>
-              {['evc', 'zaad', 'sahal', 'amtel', 'dahabshiil', 'taaj'].includes(paymentMethod) && (
-                <input
-                  type='text'
-                  placeholder='Phone Number'
-                  value={phoneNumber}
-                  onChange={e => setPhoneNumber(e.target.value)}
-                  className='mt-2 block border p-2 rounded w-full'
-                />
-              )}
-              {paymentMethod === 'premier_bank' && (
-                <input
-                  type='text'
-                  placeholder='Account Number'
-                  value={accountNumber}
-                  onChange={e => setAccountNumber(e.target.value)}
-                  className='mt-2 block border p-2 rounded w-full'
-                />
-              )}
-            </div>
-            <button onClick={handleBookNowClick} className='btn btn-primary mt-4'>Book Now</button>
-            {paymentInstructions && (
-              <div className='mt-6 p-4 border rounded bg-yellow-50'>
-                <h3 className='font-bold mb-2'>Payment Instructions</h3>
-                <pre>{paymentInstructions}</pre>
-              </div>
-            )}
           </div>
         </div>
       </div>
+
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        totalAmount={calcNumDays() > 0 ? calcNumDays() * ((room?.price || 0) - ((room?.price || 0) / 100) * (room?.discount || 0)) : 0}
+        onPaymentMethodSelect={handlePaymentMethodSelect}
+        isProcessing={isProcessingPayment}
+      />
+
+      {/* Payment Instructions Modal */}
+      {paymentData && (
+        <PaymentInstructions
+          isOpen={isInstructionsOpen}
+          onClose={() => setIsInstructionsOpen(false)}
+          paymentMethod={paymentData.method}
+          referenceNumber={paymentData.reference}
+          amount={paymentData.amount}
+          expiresAt={paymentData.expiresAt}
+        />
+      )}
     </div>
   );
 };

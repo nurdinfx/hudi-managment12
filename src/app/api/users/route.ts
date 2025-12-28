@@ -1,16 +1,16 @@
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
-import { authOptions } from '@/libs/auth';
+import { authOptionsSupabase } from '@/libs/authSupabase';
 import {
   checkReviewExists,
   createReview,
   getUserData,
   updateReview,
-} from '@/libs/apis';
+} from '@/libs/supabaseApis';
 
 export async function GET(req: Request, res: Response) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptionsSupabase);
 
   if (!session) {
     return new NextResponse('Authentication Required', { status: 500 });
@@ -27,7 +27,7 @@ export async function GET(req: Request, res: Response) {
 }
 
 export async function POST(req: Request, res: Response) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptionsSupabase);
 
   if (!session) {
     return new NextResponse('Authentication Required', { status: 500 });
@@ -48,7 +48,7 @@ export async function POST(req: Request, res: Response) {
 
     if (alreadyExists) {
       data = await updateReview({
-        reviewId: alreadyExists._id,
+        reviewId: alreadyExists.id,
         reviewText,
         userRating: ratingValue,
       });

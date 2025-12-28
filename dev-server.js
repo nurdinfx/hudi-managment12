@@ -7,8 +7,9 @@ process.env.NODE_OPTIONS = '--max-old-space-size=4096';
 
 console.log('Starting development server with increased memory allocation...');
 console.log('Memory limit: 4GB');
+console.log('Running: npx next dev');
 
-const child = spawn('next', ['dev'], {
+const child = spawn('npx', ['next', 'dev', '--port', '3000'], {
   stdio: 'inherit',
   env: {
     ...process.env,
@@ -26,4 +27,4 @@ child.on('error', (error) => {
 child.on('close', (code) => {
   console.log(`Development server exited with code ${code}`);
   process.exit(code);
-}); 
+});
